@@ -1,5 +1,7 @@
 
-     ## Это шаблон make-файла для публикации кода на GitHub.
+     ## Это шаблон* make-файла для публикации кода на GitHub.
+
+     ## * Изменен для данного проекта.
 
      ## Репозиторий на GitHub: https://github.com/Paveloom/B1
      ## Документация: https://www.notion.so/paveloom/B1-fefcaf42ddf541d4b11cfcab63c2f018
@@ -24,7 +26,7 @@
      .SILENT :
 
      ## Правила-псевдоцели
-     .PHONY : git, git-am, git-new, git-clean
+     .PHONY : git, git-am, new, del
 
      ## Правило, выполняющееся при вызове координатора без аргументов
      ALL : git
@@ -36,41 +38,40 @@
      ## Имя пользователя на GitHub
      username := Paveloom
 
-     ## Сообщение стартового коммита
-     start_message := "Стартовый коммит."
+	## Имя ветки изменений
+     FEATURE_BRANCH := feature
 
      ## Правило для создания и публикации коммита
 
      git :
 	      git add -A
 	      git commit -e
-	      git push
+
+	      # Проверка, был ли создан коммит
+	      if [ $$? -eq 0 ]; then
+	           git push
+	      fi
+
+     ## Правило для создания ветки изменений
+
+     new :
+	      git checkout -q master
+	      git checkout -b ${FEATURE_BRANCH}
+	      git push -u origin ${FEATURE_BRANCH}
+
+	## Правило для удаления текущей ветки изменений локально
+
+     del :
+	      git checkout -q master
+	      git branch -D ${FEATURE_BRANCH}
 
      ## Правило для обновления последнего коммита до текущего состояния локального репозитория
 
      git-am :
 	         git add -A
 	         git commit --amend
-	         git push --force-with-lease
 
-     ## Правило для подключения удалённого репозитория и
-     ## загрузки в него стартового make-файла
-
-     ifeq (git-new, $(firstword $(MAKECMDGOALS)))
-          new_rep := $(wordlist 2, 2, $(MAKECMDGOALS))
-          $(eval $(new_rep):;@#)
-     endif
-
-     git-new :
-	          $(make_name) git-clean
-	          git init
-	          git remote add origin git@github.com:$(username)/$(new_rep).git
-	          git add Makefile
-	          git commit -m $(start_message)
-	          git push -u origin master
-
-     ## Правило для удаления репозитория в текущей директории
-
-     git-clean :
-	            rm -rf .git
-
+	         # Проверка, был ли создан коммит
+	         if [ $$? -eq 0 ]; then
+	              git push --force-with-lease
+	         fi
