@@ -23,13 +23,13 @@ H2_CURRENT_TAG="$(grep -o "H2\-v.*\-informational" README.md | grep -o "\-.*\-" 
 printf "Тег на master:\n"
 echo $MASTER_TAG
 
-if grep -q "H1" "$CURRENT_TAG"; then
+if grep -q "H1" "$MASTER_TAG"; then
 
      printf "\nТекущий тег из README.md для H1:\n"
      echo $H1_CURRENT_TAG
 
      # Проверка, отличается ли тег на master от текущего тега
-     if [ ! $H1_CURRENT_TAG == $MASTER_TAG ]; then
+     if [ ! H1_$H1_CURRENT_TAG == $MASTER_TAG ]; then
 
           printf "\nТекущий тег для H1 и тег на master НЕ совпадают.Обновите"
           printf "\nтег на master в соответствии с текущим тегом.\n\n"
@@ -44,7 +44,7 @@ elif grep -q "H2" "$CURRENT_TAG"; then
      echo $H2_CURRENT_TAG
 
      # Проверка, отличается ли тег на master от текущего тега
-     if [ ! $H2_CURRENT_TAG == $MASTER_TAG ]; then
+     if [ ! H2_$H2_CURRENT_TAG == $MASTER_TAG ]; then
 
           printf "\nТекущий тег для H2 и тег на master НЕ совпадают.Обновите"
           printf "\nтег на master в соответствии с текущим тегом.\n\n"
@@ -55,7 +55,7 @@ elif grep -q "H2" "$CURRENT_TAG"; then
 
 else
 
-     printf "\nТекущий тег не содержит префикса H1 / H2.\n\n"
+     printf "\nМастер тег не содержит префикса H1 / H2.\n\n"
      exit 1
 
 fi

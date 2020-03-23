@@ -1,1 +1,1 @@
-[![](https://img.shields.io/badge/H1-v0.1.1-informational.svg)](https://github.com/Paveloom/C3/releases/tag/H1-v0.1.1) [![](https://img.shields.io/badge/platforms-linux-3E6680.svg)](#)
+[![](https://img.shields.io/badge/H1_v0.1.1-informational.svg)](https://github.com/Paveloom/C3/releases/tag/H1_v0.1.1) [![](https://img.shields.io/badge/platforms-linux-3E6680.svg)](#)
