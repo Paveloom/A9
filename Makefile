@@ -32,7 +32,7 @@
      .SILENT :
 
      ## Правила-псевдоцели
-     .PHONY : git, git-am, new, del
+     .PHONY : git, final, new, del, git-am, archive
 
      ## Правило, выполняющееся при вызове координатора без аргументов
      ALL : git
@@ -50,13 +50,107 @@
      ## Правило для создания и публикации коммита
 
      git :
-	      git add -A
-	      git commit -e
+ 
+	      # Определение текущей ветки
+	      CURRENT_BRANCH=$$(git status | head -n 1 | cut -d " " -f 3)
 
-	      # Проверка, был ли создан коммит
-	      if [ $$? -eq 0 ]; then
-	           git push
+	      # Проверка текущей ветки
+	      if [ "$$CURRENT_BRANCH" = "${FEATURE_BRANCH}" ]; then
+
+	           # Определение последнего тега
+	           LAST_TAG=$$(git describe --tag)
+
+	           # Проверка наличия тега у предыдущего коммита
+	           if echo $$LAST_TAG | grep -qv "-"; then
+
+	                # Определение номера сгенерированного ранее тега
+	                CURRENT_NUMBER=$$(echo $$LAST_TAG | grep -o "_[0-9]\+" | sed 's/_//')
+
+	                # Проверка наличия сгенерированного ранее тега
+	                if echo $$LAST_TAG | grep -q "_"; then
+
+	                     # Прибавление к текущему номеру единицы
+	                     NEXT_NUMBER=$$(( $$CURRENT_NUMBER + 1 ))
+
+	                     # Формирование нового тега
+	                     NEXT_TAG=$$(echo $$LAST_TAG | sed "s/_$$CURRENT_NUMBER/_$$NEXT_NUMBER/")
+
+	                     git add -A
+	                     git commit -e
+                     
+	                     # Проверка, был ли создан коммит
+	                     if [ $$? -eq 0 ]; then
+
+	                          git tag -a $$NEXT_TAG -m "$$NEXT_TAG"
+	                          git tag -d $$LAST_TAG
+	                          git push origin :$$LAST_TAG
+	                          git push --follow-tags
+
+	                     fi
+
+	                else
+
+	                     # Формирование нового тега
+	                     NEXT_TAG=$$(echo "$$LAST_TAG _${FEATURE_BRANCH}_1" | sed "s/\ //")
+
+	                     git add -A
+	                     git commit -e
+
+	                     # Проверка, был ли создан коммит
+	                     if [ $$? -eq 0 ]; then
+
+	                          git tag -a $$NEXT_TAG -m "$$NEXT_TAG"
+	                          git push --follow-tags
+
+	                     fi
+
+	                fi
+
+	           else
+
+	                git add -A
+	                git commit -e
+
+	                # Проверка, был ли создан коммит
+	                if [ $$? -eq 0 ]; then
+	                     git push
+	                fi
+  
+	           fi
+
+	      else
+
+	           git add -A
+	           git commit -e
+
+	           # Проверка, был ли создан коммит
+	           if [ $$? -eq 0 ]; then
+	                git push
+	           fi
+
 	      fi
+
+     # Правило для удаления последнего тега
+     # на ветке изменений локально и удаленно
+
+     final : 
+
+	        # Определение текущей ветки
+	        CURRENT_BRANCH=$$(git status | head -n 1 | cut -d " " -f 3)
+
+	        # Проверка текущей ветки
+	        if [ "$$CURRENT_BRANCH" = "${FEATURE_BRANCH}" ]; then
+
+	             # Определение последнего тега
+	             LAST_TAG=$$(git describe --tag)
+
+	             # Удаление последнего тега удаленно
+	             git push origin :$$LAST_TAG
+
+	             # Удаление последнего тега локально
+	             git tag -d $$LAST_TAG
+
+	        fi
 
      ## Правило для создания ветки изменений
 
@@ -74,10 +168,32 @@
      ## Правило для обновления последнего коммита до текущего состояния локального репозитория
 
      git-am :
+
+	         # Определение последнего тега
+	         LAST_TAG=$$(git describe --tag)
+
 	         git add -A
 	         git commit --amend
 
 	         # Проверка, был ли создан коммит
 	         if [ $$? -eq 0 ]; then
-	              git push --force-with-lease
+
+	              # Удаление последнего тега локально
+	              git tag -d $$LAST_TAG
+
+	              # Создание последнего тега локально
+	              git tag -a $$LAST_TAG -m "$$LAST_TAG"
+
+	              # Удаление последнего тега удаленно
+	              git push origin :$$LAST_TAG
+
+	              # Пуш
+	              git push --follow-tags --force-with-lease
+
 	         fi
+
+
+     # Правило для создания архивов
+
+     archive :
+	          find H1.\ Вычисление\ эфемериды/ -path '*/.*' -prune -o -type f -print | zip Архивы/H1.zip -FS -q -@
