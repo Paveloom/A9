@@ -23,7 +23,7 @@ H2_CURRENT_TAG="$(grep -o "H2\-v.*\-informational" README.md | grep -o "\-.*\-" 
 printf "Тег на master:\n"
 echo $MASTER_TAG
 
-if grep -q "H1" "$MASTER_TAG"; then
+if echo "$MASTER_TAG" | grep -q "H1"; then
 
      printf "\nТекущий тег из README.md для H1:\n"
      echo $H1_CURRENT_TAG
@@ -38,7 +38,7 @@ if grep -q "H1" "$MASTER_TAG"; then
 
      fi
 
-elif grep -q "H2" "$MASTER_TAG"; then
+elif echo "$MASTER_TAG" | grep -q "H2"; then
 
      printf "\nТекущий тег из README.md для H2:\n"
      echo $H2_CURRENT_TAG
