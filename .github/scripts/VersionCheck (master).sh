@@ -38,7 +38,7 @@ if grep -q "H1" "$MASTER_TAG"; then
 
      fi
 
-elif grep -q "H2" "$CURRENT_TAG"; then
+elif grep -q "H2" "$MASTER_TAG"; then
 
      printf "\nТекущий тег из README.md для H2:\n"
      echo $H2_CURRENT_TAG
