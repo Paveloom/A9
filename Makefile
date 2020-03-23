@@ -67,7 +67,7 @@
 	                CURRENT_NUMBER=$$(echo $$LAST_TAG | grep -o "_[0-9]\+" | sed 's/_//')
 
 	                # Проверка наличия сгенерированного ранее тега
-	                if echo $$LAST_TAG | grep -q "_"; then
+	                if echo $$LAST_TAG | grep -q "_[0-9]\+"; then
 
 	                     # Прибавление к текущему номеру единицы
 	                     NEXT_NUMBER=$$(( $$CURRENT_NUMBER + 1 ))
