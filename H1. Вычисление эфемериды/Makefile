@@ -73,10 +73,10 @@
      source_path := Исходники/
 
      ## Указание поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш), относящихся к модулю
-     module_subs := 
+     module_subs := Вход/ Вход/Ошибки/ Вход/Считывание/ Вход/Освобождение/
 
      ## Указание всех поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш)
-     subs := Ephemeris/ $(addprefix Ephemeris/, $(module_subs))
+     subs := ephemeris/ $(addprefix ephemeris/, $(module_subs))
 
      ## Директория с объектными файлами (всегда в окончании прямой слеш; точка-слеш, если хранить в текущей директории)
      obj_path := Объектники/
@@ -86,7 +86,16 @@
      $(obj_path)$(main_name).o : $(obj_path)ephemeris.o
 
           # API модуля
-          $(obj_path)ephemeris.o : $(obj_path)prec_m.o
+          $(obj_path)ephemeris.o : $(obj_path)ephemeris_input_m.o
+
+               # Входные данные
+               $(obj_path)ephemeris_input_m.o : $(obj_path)prec_m.o
+
+                    # Считывание
+                    $(obj_path)ephemeris_input_read_s.o : $(obj_path)ephemeris_input_m.o
+
+                    # Вывод ошибок
+                    $(obj_path)ephemeris_input_log_error_s.o : $(obj_path)ephemeris_input_m.o
 
      # Определение флагов компилятора
 
