@@ -7,6 +7,8 @@ implicit none
 
      call e%input%read('Файлы/input') ! Считывание входных данных
 
-     call e%input%deallocate() ! Освобождение памяти из-под входных данных
+     call e%calculate() ! Вычисление эфемериды
+
+     call e%deallocate() ! Общее освобождение памяти
 
 end program main

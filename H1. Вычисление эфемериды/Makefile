@@ -73,7 +73,10 @@
      source_path := Исходники/
 
      ## Указание поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш), относящихся к модулю
-     module_subs := Вход/ Вход/Ошибки/ Вход/Считывание/ Вход/Освобождение/
+     module_subs := Вход/ Вход/Ошибки/ Вход/Считывание/ Вход/Освобождение/ \
+                    Действия/ Действия/Вычисление/ Действия/Ошибки/ \
+                    Результат/ Результат/Ошибки/ Результат/Освобождение/ \
+                    Вспомогательные/Освобождение/ Вспомогательные/Вычисление/
 
      ## Указание всех поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш)
      subs := ephemeris/ $(addprefix ephemeris/, $(module_subs))
@@ -86,7 +89,14 @@
      $(obj_path)$(main_name).o : $(obj_path)ephemeris.o
 
           # API модуля
-          $(obj_path)ephemeris.o : $(obj_path)ephemeris_input_m.o
+          $(obj_path)ephemeris.o : $(obj_path)ephemeris_input_m.o $(obj_path)ephemeris_do_m.o \
+                                   $(obj_path)ephemeris_result_m.o
+
+               # Вспомогательные процедуры
+               $(obj_path)ephemeris_deallocate_s.o : $(obj_path)ephemeris.o
+
+               # Вспомогательная процедура для вычисления эфемериды
+               $(obj_path)ephemeris_calculate_s.o : $(obj_path)ephemeris.o
 
                # Входные данные
                $(obj_path)ephemeris_input_m.o : $(obj_path)prec_m.o
@@ -94,8 +104,30 @@
                     # Считывание
                     $(obj_path)ephemeris_input_read_s.o : $(obj_path)ephemeris_input_m.o
 
+                    # Освобождение памяти
+                    $(obj_path)ephemeris_input_deallocate_s.o : $(obj_path)ephemeris_input_m.o
+
                     # Вывод ошибок
                     $(obj_path)ephemeris_input_log_error_s.o : $(obj_path)ephemeris_input_m.o
+
+               # Действия
+               $(obj_path)ephemeris_do_m.o : $(obj_path)prec_m.o $(obj_path)ephemeris_input_m.o \
+                                             $(obj_path)ephemeris_result_m.o
+
+                    # Вычисление эфемериды
+                    $(obj_path)ephemeris_do_calculate_s.o : $(obj_path)ephemeris_do_m.o
+
+                    # Вывод ошибок
+                    $(obj_path)ephemeris_do_log_error_s.o : $(obj_path)ephemeris_do_m.o
+
+               # Результат
+               $(obj_path)ephemeris_result_m.o : $(obj_path)prec_m.o
+
+                    # Освобождение памяти
+                    $(obj_path)ephemeris_result_deallocate_s.o : $(obj_path)ephemeris_result_m.o
+
+                    # Вывод ошибок
+                    $(obj_path)ephemeris_result_log_error_s.o : $(obj_path)ephemeris_result_m.o
 
      # Определение флагов компилятора
 

@@ -141,7 +141,7 @@ implicit none
                     deallocate( input%Y, stat = stat )
                     if ( stat .ne. 0_SP ) call ephemeris_input_log_error('WD_Y')
 
-                    ! Выделение памяти под массив значений координаты X Солнца
+                    ! Выделение памяти под массив значений координаты Y Солнца
                     allocate( input%Y(1_JP:input%N), stat = stat )
                     if ( stat .ne. 0_SP ) call ephemeris_input_log_error('WA_Y')
 
@@ -171,7 +171,7 @@ implicit none
                     deallocate( input%Z, stat = stat )
                     if ( stat .ne. 0_SP ) call ephemeris_input_log_error('WD_Z')
 
-                    ! Выделение памяти под массив значений координаты X Солнца
+                    ! Выделение памяти под массив значений координаты Z Солнца
                     allocate( input%Z(1_JP:input%N), stat = stat )
                     if ( stat .ne. 0_SP ) call ephemeris_input_log_error('WA_Z')
 
