@@ -26,7 +26,7 @@ echo $MASTER_TAG
 if echo "$MASTER_TAG" | grep -q "H1"; then
 
      printf "\nТекущий тег из README.md для H1:\n"
-     echo $H1_CURRENT_TAG
+     echo H1_$H1_CURRENT_TAG
 
      # Проверка, отличается ли тег на master от текущего тега
      if [ ! H1_$H1_CURRENT_TAG == $MASTER_TAG ]; then
@@ -41,7 +41,7 @@ if echo "$MASTER_TAG" | grep -q "H1"; then
 elif echo "$MASTER_TAG" | grep -q "H2"; then
 
      printf "\nТекущий тег из README.md для H2:\n"
-     echo $H2_CURRENT_TAG
+     echo H2_$H2_CURRENT_TAG
 
      # Проверка, отличается ли тег на master от текущего тега
      if [ ! H2_$H2_CURRENT_TAG == $MASTER_TAG ]; then

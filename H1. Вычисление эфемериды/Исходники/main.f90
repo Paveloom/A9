@@ -3,6 +3,12 @@ program main ! Программа, демонстрирующая использ
 use ephemeris ! Модуль для вычисления эфемерид малых планет
 implicit none
 
-     type ( ephemeris_API ) :: e ! Экземпляр API модуля 
+     type ( ephemeris_API ) :: e ! Экземпляр API модуля
+
+     call e%input%read('Файлы/input') ! Считывание входных данных
+
+     call e%calculate() ! Вычисление эфемериды
+
+     call e%deallocate() ! Общее освобождение памяти
 
 end program main
