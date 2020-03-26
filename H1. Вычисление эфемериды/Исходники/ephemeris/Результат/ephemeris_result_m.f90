@@ -1,7 +1,9 @@
 module ephemeris_result_m ! Модуль, описывающий результат и
                           ! операции, связанные с ним
 use prec_m, only : RP, & ! Точность вещественных чисел, используемых в программе
-                 & SP    ! Точность целого числа статусной переменной
+                 & RF, & ! Формат вывода вещественных чисел
+                 & SP, & ! Точность целого числа статусной переменной
+                 & UP    ! Точность целого числа номера дескриптора файла
 implicit none
      
      private
@@ -19,6 +21,9 @@ implicit none
 
           ! Процедура для освобождения памяти (результат)
           procedure :: deallocate => ephemeris_result_deallocate
+
+          ! Процедура для записи результата в файл
+          procedure :: write => ephemeris_result_write
 
      end type result_type
 
@@ -40,6 +45,15 @@ implicit none
                class( result_type ), intent(inout) :: result ! Результат
 
           end subroutine ephemeris_result_deallocate
+
+          ! Процедура для записи результата в файл
+          module impure subroutine ephemeris_result_write(result, file)
+          implicit none
+               
+               class( result_type ), intent(inout) :: result ! Результат
+               character(*), intent(in), optional :: file ! Имя файла для записи
+
+          end subroutine ephemeris_result_write
 
      end interface
      

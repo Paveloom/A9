@@ -9,6 +9,8 @@ implicit none
 
      call e%calculate() ! Вычисление эфемериды
 
+     call e%result%write('Файлы/result') ! Запись результата в файл
+
      call e%deallocate() ! Общее освобождение памяти
 
 end program main
