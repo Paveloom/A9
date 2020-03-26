@@ -196,4 +196,5 @@
      # Правило для создания архивов
 
      archive :
+	          find Материалы/ -path '*/.*' -prune -o -type f -print | zip Архивы/Материалы.zip -FS -q -@
 	          find H1.\ Вычисление\ эфемериды/ -path '*/.*' -prune -o -type f -print | zip Архивы/H1.zip -FS -q -@
