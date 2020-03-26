@@ -218,6 +218,9 @@ implicit none
                ! Вычисление склонения
                result%delta(j) = asin(zcg / ro)
 
+               ! [ Сохранение дат в результате ]
+               result%dates(:) = dates(:)
+
           enddo
 
           end associate
