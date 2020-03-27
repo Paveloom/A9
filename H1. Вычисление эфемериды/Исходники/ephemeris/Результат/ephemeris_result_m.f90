@@ -5,13 +5,13 @@ use prec_m, only : RP, & ! Точность вещественных чисел,
                  & SP, & ! Точность целого числа статусной переменной
                  & UP    ! Точность целого числа номера дескриптора файла
 implicit none
-     
+
      private
      public :: result_type ! Тип, определяющий результат
-     
+
      ! Тип, определяющий результат
      type result_type
-          
+
           real(RP), dimension(:), allocatable :: dates ! Массив дат
 
           real(RP), dimension(:), allocatable :: alpha ! Массив значений прямых восхождений
@@ -32,7 +32,7 @@ implicit none
           ! Процедура для вывода ошибок (результат)
           module impure subroutine ephemeris_result_log_error(error_code, file)
           implicit none
-               
+
                character(*), intent(in) :: error_code ! Код ошибки
                character(*), intent(in), optional :: file ! Имя файла
 
@@ -41,7 +41,7 @@ implicit none
           ! Процедура для освобождения памяти (результат)
           module impure subroutine ephemeris_result_deallocate(result)
           implicit none
-               
+
                class( result_type ), intent(inout) :: result ! Результат
 
           end subroutine ephemeris_result_deallocate
@@ -49,12 +49,12 @@ implicit none
           ! Процедура для записи результата в файл
           module impure subroutine ephemeris_result_write(result, file)
           implicit none
-               
+
                class( result_type ), intent(inout) :: result ! Результат
                character(*), intent(in), optional :: file ! Имя файла для записи
 
           end subroutine ephemeris_result_write
 
      end interface
-     
+
 end module ephemeris_result_m

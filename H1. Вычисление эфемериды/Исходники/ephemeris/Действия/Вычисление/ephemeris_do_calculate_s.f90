@@ -1,11 +1,11 @@
 submodule ( ephemeris_do_m ) ephemeris_do_calculate_s
 implicit none
-     
+
      contains
-     
+
      ! Процедура для вычисления эфемериды
      module procedure ephemeris_do_calculate
-          
+
           ! Постоянная из уравнения движения
           real(RP), parameter :: chi = 0.017202_RP
 
@@ -16,7 +16,7 @@ implicit none
           real(RP), parameter :: eps = 4._RP * atan(1._RP) * &
                                  & (23._RP + 26._RP / 60._RP + 12.27_RP / 3600._RP) / 180._RP
 
-          ! Вспомогательные переменные для вычисления 
+          ! Вспомогательные переменные для вычисления
           ! координат в экваториальной системе координат
           real(RP), parameter :: sin_eps = sin(eps)
           real(RP), parameter :: cos_eps = cos(eps)
@@ -48,7 +48,7 @@ implicit none
           real(RP) :: xcg, ycg, zcg !  Геоцентрические координаты
           real(RP) :: ro ! Радиус-вектор в геоцентрических координатах
 
-          ! Вспомогательная переменная при вычислении 
+          ! Вспомогательная переменная при вычислении
           ! прямых восхождений и склонений
           real(RP) :: zcg_sq ! Значение zcg * zcg
 
@@ -205,7 +205,7 @@ implicit none
                zcg = zce + Z(j)
 
                ! [ Вычисление прямых восхождений и склонений ]
-               
+
                ! Вычисление квадрата zcg
                zcg_sq = zcg * zcg
 
@@ -226,5 +226,5 @@ implicit none
           end associate
 
      end procedure ephemeris_do_calculate
-     
+
 end submodule ephemeris_do_calculate_s

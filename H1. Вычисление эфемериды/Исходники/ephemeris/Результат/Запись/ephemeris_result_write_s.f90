@@ -1,11 +1,11 @@
 submodule ( ephemeris_result_m ) ephemeris_result_write_s
 implicit none
-     
+
      contains
-     
+
      ! Процедура для записи результата в файл
      module procedure ephemeris_result_write
-          
+
           integer(SP) :: stat ! Статусная переменная
           integer(UP) :: unit ! Номер дескриптора файла
 
@@ -35,7 +35,7 @@ implicit none
           ! Закрытие файла
           close( unit = unit, iostat = stat )
           if ( stat .ne. 0_SP ) call ephemeris_result_log_error('WC', file)
-          
+
      end procedure ephemeris_result_write
-     
+
 end submodule ephemeris_result_write_s
