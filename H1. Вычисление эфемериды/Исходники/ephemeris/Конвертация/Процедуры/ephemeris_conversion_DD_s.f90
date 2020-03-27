@@ -24,8 +24,8 @@ implicit none
           value_D = value * 180._RP / pi
 
           ! Вычисление градусов
-          degrees = floor(value_D)
-          degrees_RP = real(degrees, kind=RP)
+          degrees = int(sign(1._RP, value_D), kind=IP) * floor(abs(value_D))
+          degrees_RP = real(abs(degrees), kind=RP)
 
           ! Перевод градусов
           do while (degrees .ge. 360_IP)
@@ -34,14 +34,14 @@ implicit none
 
           enddo
 
-          do while (degrees .lt. 0_IP)
+          do while (degrees .lt. -360_IP)
 
                degrees = degrees + 360_IP
 
           enddo
 
           ! Вычитание градусов и переход к минутам
-          tmp = (value_D - degrees_RP) * 60._RP
+          tmp = (abs(value_D) - degrees_RP) * 60._RP
 
           ! Вычисление минут
           minutes = floor(tmp)
@@ -61,7 +61,7 @@ implicit none
           write(f1, *) degrees
           write(f2, *) minutes
           write(f3, *) seconds
-          write(f4, *) tmp
+          write(f4, '('//RF//')') tmp
 
           f4 = adjustl(f4)
           allocate(out, source = trim(adjustl(f1))//'°'//trim(adjustl(f2))//"'"//trim(adjustl(f3))//'"'//trim(f4(2:)))

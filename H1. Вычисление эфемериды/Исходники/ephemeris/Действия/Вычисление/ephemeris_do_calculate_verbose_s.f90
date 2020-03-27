@@ -244,7 +244,7 @@ implicit none
                ro = sqrt(xcg * xcg + ycg * ycg + zcg_sq)
 
                ! Вычисление прямого восхождения
-               result%alpha(j) = atan(xcg / ycg) + pi_2
+               result%alpha(j) = atan(ycg / xcg) + pi_2
 
                ! Вывод полученного значения
                write(*,'(5x, a, /, 5x, a, /)') 'Прямое восхождение:', ephemeris_conversion_DMS(result%alpha(j))

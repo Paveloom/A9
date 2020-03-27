@@ -9,7 +9,7 @@ implicit none
 
      call e%calculate(verbose=.true.) ! Вычисление эфемериды
 
-     call e%result%write('Файлы/result', conversion=.true.) ! Запись результата в файл
+     call e%result%write('Файлы/result', conversion=.false.) ! Запись результата в файл
 
      call e%deallocate() ! Общее освобождение памяти
 

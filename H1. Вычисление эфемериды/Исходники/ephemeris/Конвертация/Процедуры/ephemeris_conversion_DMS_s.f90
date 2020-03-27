@@ -30,7 +30,7 @@ implicit none
           value_D = value * 180._RP / pi
 
           ! Вычисление градусов
-          degrees = floor(value_D)
+          degrees = floor(abs(value_D))
           degrees_RP = real(degrees, kind=RP)
 
           ! Вычитание градусов и переход к минутам
@@ -84,7 +84,7 @@ implicit none
           write(f1, *) hours
           write(f2, *) h_minutes
           write(f3, *) h_seconds
-          write(f4, *) tmp
+          write(f4, '('//RF//')') tmp
 
           f4 = adjustl(f4)
           allocate(out, source = trim(adjustl(f1))//'h '//trim(adjustl(f2))//'m '//trim(adjustl(f3))//'s'//trim(f4(2:)))
