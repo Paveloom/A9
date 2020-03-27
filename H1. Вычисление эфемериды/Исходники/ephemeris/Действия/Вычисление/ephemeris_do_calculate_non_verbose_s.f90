@@ -6,27 +6,6 @@ implicit none
      ! Процедура для вычисления эфемериды (с дополнительным выводом)
      module procedure ephemeris_do_calculate_non_verbose
 
-          ! Постоянная из уравнения движения
-          real(RP), parameter :: chi = 0.017202_RP
-
-          ! Постоянная малости для итераций уравнения Кеплера
-          real(RP), parameter :: eps_K = 1e-8_RP
-
-          ! Число 2 * pi
-          real(RP), parameter :: pi_2 = 8._RP * atan(1._RP)
-
-          ! Число pi / 180
-          real(RP), parameter :: pi_180 = pi_2 / 360._RP
-
-          ! Наклон экватора к эклиптике
-          real(RP), parameter :: eps =  pi_180 * &
-                                 & (23._RP + 26._RP / 60._RP + 12.27_RP / 3600._RP)
-
-          ! Вспомогательные переменные для вычисления
-          ! координат в экваториальной системе координат
-          real(RP), parameter :: sin_eps = sin(eps)
-          real(RP), parameter :: cos_eps = cos(eps)
-
           ! Значение числа sqrt( (1+e) / (1-e) )
           real(RP) :: sqrt_v
 
