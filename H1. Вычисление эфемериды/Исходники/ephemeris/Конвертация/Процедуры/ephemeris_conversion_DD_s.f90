@@ -34,6 +34,12 @@ implicit none
 
           enddo
 
+          do while (degrees .lt. 0_IP)
+
+               degrees = degrees + 360_IP
+
+          enddo
+
           ! Вычитание градусов и переход к минутам
           tmp = (value_D - degrees_RP) * 60._RP
 

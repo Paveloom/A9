@@ -57,6 +57,12 @@ implicit none
 
           enddo
 
+          do while (hours .lt. 0_IP)
+
+               hours = hours + 24_IP
+
+          enddo
+
           ! Вычитание часов и переход к минутам
           tmp = tmp - hours_RP * 3600._RP
 

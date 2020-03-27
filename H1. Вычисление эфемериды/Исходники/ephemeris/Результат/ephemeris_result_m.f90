@@ -3,7 +3,10 @@ module ephemeris_result_m ! Модуль, описывающий результ�
 use prec_m, only : RP, & ! Точность вещественных чисел, используемых в программе
                  & RF, & ! Формат вывода вещественных чисел
                  & SP, & ! Точность целого числа статусной переменной
+                 & JP, & ! Точность целого числа счетчика и индекса
                  & UP    ! Точность целого числа номера дескриптора файла
+use ephemeris_conversion_m, only : ephemeris_conversion_DD, & ! Функция для конвертации из радианной меры в градусную
+                                 & ephemeris_conversion_DMS   ! Функция для конвертации из радианной меры в часовую
 implicit none
 
      private
@@ -47,11 +50,14 @@ implicit none
           end subroutine ephemeris_result_deallocate
 
           ! Процедура для записи результата в файл
-          module impure subroutine ephemeris_result_write(result, file)
+          module impure subroutine ephemeris_result_write(result, file, conversion)
           implicit none
 
                class( result_type ), intent(inout) :: result ! Результат
                character(*), intent(in), optional :: file ! Имя файла для записи
+
+               ! Тумблер конвертации
+               logical(kind(.true.)), optional, intent(in) :: conversion
 
           end subroutine ephemeris_result_write
 
