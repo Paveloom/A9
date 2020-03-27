@@ -20,9 +20,14 @@
      ## Имя координатора
      make_name := make
 
+     ## Указание оболочки
+     SHELL := /bin/bash
+
+     ## Указание make-файлу выполнять все правила в одном вызове оболочки
+     .ONESHELL :
+
      ## Заглушка на вывод сообщений указанными правилами
      ## (без указания имён подавляет вывод со стороны make-файла у всех правил)
-
      .SILENT :
 
      ## Правила-псевдоцели
@@ -76,7 +81,8 @@
      module_subs := Вход/ Вход/Ошибки/ Вход/Считывание/ Вход/Освобождение/ \
                     Действия/ Действия/Вычисление/ Действия/Ошибки/ \
                     Результат/ Результат/Ошибки/ Результат/Освобождение/ Результат/Запись/ \
-                    Вспомогательные/Освобождение/ Вспомогательные/Вычисление/
+                    Вспомогательные/Освобождение/ Вспомогательные/Вычисление/ \
+                    Конвертация/ Конвертация/Процедуры/
 
      ## Указание всех поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш)
      subs := ephemeris/ $(addprefix ephemeris/, $(module_subs))
@@ -85,7 +91,7 @@
      obj_path := Объектники/
 
      ## Правила-зависимости (при необходимости)
-     
+
      $(obj_path)$(main_name).o : $(obj_path)ephemeris.o
 
           # API модуля
@@ -112,16 +118,19 @@
 
                # Действия
                $(obj_path)ephemeris_do_m.o : $(obj_path)prec_m.o $(obj_path)ephemeris_input_m.o \
-                                             $(obj_path)ephemeris_result_m.o
+                                             $(obj_path)ephemeris_result_m.o $(obj_path)ephemeris_conversion_m.o
 
-                    # Вычисление эфемериды
-                    $(obj_path)ephemeris_do_calculate_s.o : $(obj_path)ephemeris_do_m.o
+                    # Вычисление эфемериды (с дополнительным выводом)
+                    $(obj_path)ephemeris_do_calculate_verbose_s.o : $(obj_path)ephemeris_do_m.o
+
+                    # Вычисление эфемериды (без дополнительного вывода)
+                    $(obj_path)ephemeris_do_calculate_non_verbose_s.o : $(obj_path)ephemeris_do_m.o
 
                     # Вывод ошибок
                     $(obj_path)ephemeris_do_log_error_s.o : $(obj_path)ephemeris_do_m.o
 
                # Результат
-               $(obj_path)ephemeris_result_m.o : $(obj_path)prec_m.o
+               $(obj_path)ephemeris_result_m.o : $(obj_path)prec_m.o $(obj_path)ephemeris_conversion_m.o
 
                     # Освобождение памяти
                     $(obj_path)ephemeris_result_deallocate_s.o : $(obj_path)ephemeris_result_m.o
@@ -131,6 +140,15 @@
 
                     # Запись результата
                     $(obj_path)ephemeris_result_write_s.o : $(obj_path)ephemeris_result_m.o
+
+               # Конвертация
+               $(obj_path)ephemeris_conversion_m.o : $(obj_path)prec_m.o
+
+                    # Функция для конвертации из радианной меры в градусную (с форматированием)
+                    $(obj_path)ephemeris_conversion_DD_s.o : $(obj_path)ephemeris_conversion_m.o
+
+                    # Функция для конвертации из радианной меры в часовую
+                    $(obj_path)ephemeris_conversion_DMS_s.o : $(obj_path)ephemeris_conversion_m.o
 
      # Определение флагов компилятора
 
@@ -182,25 +200,25 @@
 	        touch input
 
      result : $(main_name)
-	         if [ "true" = "$(use_input)" ]; then\
-	              $(make_name) input;\
-	              if [ "true" = "$(use_output)" ]; then\
-	                   time ./$< < input > output;\
-	              else\
-	                   time ./$< < input;\
-	              fi\
-	         else\
-	              if [ "true" = "$(use_output)" ]; then\
-	                   time ./$< > output;\
-	              else\
-	                   time ./$<;\
-	              fi\
+	         if [ "true" = "$(use_input)" ]; then
+	              $(make_name) input;
+	              if [ "true" = "$(use_output)" ]; then
+	                   time ./$< < input > output;
+	              else
+	                   time ./$< < input;
+	              fi
+	         else
+	              if [ "true" = "$(use_output)" ]; then
+	                   time ./$< > output;
+	              else
+	                   time ./$<;
+	              fi
 	         fi
 
      result-r :
-	           if [ "true" != "$(use_output)" ]; then\
-	                echo; echo "Вы не можете использовать это правило, пока значение переменной use_output != true."; echo;\
-	                exit 1;\
+	           if [ "true" != "$(use_output)" ]; then
+	                echo; echo "Вы не можете использовать это правило, пока значение переменной use_output != true."; echo;
+	                exit 1;
 	           fi
 	           $(make_name) result
 	           cat output
@@ -210,9 +228,9 @@
 	           $(make_name) clean
 
      result-c :
-	           if [ "true" != "$(use_output)" ]; then\
-	                echo; echo "Вы не можете использовать это правило, пока значение переменной use_output != true."; echo;\
-	                exit 1;\
+	           if [ "true" != "$(use_output)" ]; then
+	                echo; echo "Вы не можете использовать это правило, пока значение переменной use_output != true."; echo;
+	                exit 1;
 	           fi
 	           $(make_name) result-r
 	           $(make_name) clean
@@ -220,8 +238,8 @@
      # Правило для очистки
 
      clean :
-	        if [ "true" = "$(save_main)" ]; then\
-	             rm -f $(obj_main) $(obj_mod) $(obj_path)*.smod $(mod);\
-	        else\
-	             rm -f $(obj_main) $(obj_mod) $(obj_path)*.smod $(mod) $(main_name);\
+	        if [ "true" = "$(save_main)" ]; then
+	             rm -f $(obj_main) $(obj_mod) $(obj_path)*.smod $(mod);
+	        else
+	             rm -f $(obj_main) $(obj_mod) $(obj_path)*.smod $(mod) $(main_name);
 	        fi

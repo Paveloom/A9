@@ -1,0 +1,17 @@
+name: NoObjects
+
+on:
+  push:
+    tags:
+      - H[1-2]_v[0-9]+.[0-9]+.[0-9]+
+
+jobs:
+  NoObjects_master:
+
+    name: NoObjects Job (master)
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Запуск скрипта для проверки директории объектных файлов
+      run: bash .github/scripts/NoObjects.sh

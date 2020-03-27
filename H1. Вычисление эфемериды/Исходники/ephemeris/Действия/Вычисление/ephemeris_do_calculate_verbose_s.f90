@@ -1,40 +1,30 @@
-submodule ( ephemeris_do_m ) ephemeris_do_calculate_s
+submodule ( ephemeris_do_m ) ephemeris_do_calculate_verbose_s
 implicit none
-     
+
      contains
-     
-     ! Процедура для вычисления эфемериды
-     module procedure ephemeris_do_calculate
-          
-          ! Постоянная из уравнения движения
-          real(RP), parameter :: chi = 0.017202_RP
 
-          ! Постоянная малости для итераций уравнения Кеплера
-          real(RP), parameter :: eps_K = 1e-8_RP
-
-          ! Наклон экватора к эклиптике
-          real(RP), parameter :: eps = 4._RP * atan(1._RP) * &
-                                 & (23._RP + 26._RP / 60._RP + 12.27_RP / 3600._RP) / 180._RP
-
-          ! Вспомогательные переменные для вычисления 
-          ! координат в экваториальной системе координат
-          real(RP), parameter :: sin_eps = sin(eps)
-          real(RP), parameter :: cos_eps = cos(eps)
+     ! Процедура для вычисления эфемериды (с дополнительным выводом)
+     module procedure ephemeris_do_calculate_verbose
 
           ! Значение числа sqrt( (1+e) / (1-e) )
           real(RP) :: sqrt_v
+
+          ! Некоторые элементы орбиты (в радианах)
+          real(RP) :: i_r ! Наклонение плоскости орбиты к плоскости эклиптики (радианы)
+          real(RP) :: small_omega_r ! Угловое расстояние перигелия от восходящего узла (радианы)
+          real(RP) :: capital_omega_r ! Гелиоцентрическая долгота восходящего узла (радианы)
+          real(RP) :: M_0_r ! Момент прохождения через перигелий (радианы)
 
           real(RP) :: n ! Средняя угловая скорость
           real(RP) :: M ! Средняя аномалия
           real(RP) :: EA ! Эксцентрическая аномалия
           real(RP) :: EA_prev ! Предыдущее значение эксцентрической аномалии
 
-          ! Орбитальные координаты
-          real(RP) :: theta
-          real(RP) :: r
+          real(RP) :: theta ! Истинная аномалия
+          real(RP) :: r ! Расстояние
 
           real(RP) :: u ! Аргумент широты
-          real(RP) :: xc, yc, zc ! Прямоугольные координаты
+          real(RP) :: xc, yc, zc ! Координаты в эклиптической системе координат
           real(RP) :: yce, zce ! Координаты в экваториальной системе координат
 
           ! Вспомогательные переменные для вычисления координат
@@ -48,12 +38,15 @@ implicit none
           real(RP) :: xcg, ycg, zcg !  Геоцентрические координаты
           real(RP) :: ro ! Радиус-вектор в геоцентрических координатах
 
-          ! Вспомогательная переменная при вычислении 
+          ! Вспомогательная переменная при вычислении
           ! прямых восхождений и склонений
           real(RP) :: zcg_sq ! Значение zcg * zcg
 
           integer(JP) :: j ! Счетчики
           integer(SP) :: stat ! Статусная переменная
+
+          ! Вывод информации о вызове процедуры
+          write(*,'(/, 5x, a, /)') 'Вызвана процедура вычисления эфемериды'
 
           ! Проверка, выделена ли память под массивы во входных данных
           if ( .not. allocated(input%dates) ) call ephemeris_do_log_error('NA_dates')
@@ -147,22 +140,41 @@ implicit none
           ! Вычисление числа sqrt( (1+e) / (1-e) )
           sqrt_v = sqrt( ( 1._RP + e )/( 1._RP - e ) )
 
+          ! Перевод некоторых элементов орбиты
+          ! из градусной меры в радианную
+          i_R = pi_180 * i
+          small_omega_r = pi_180 * small_omega
+          capital_omega_r = pi_180 * capital_omega
+          M_0_r = pi_180 * M_0
+
           ! Вычисление некоторых вспомогательных
           ! переменных для вычисления координат
-          cos_capital_omega = cos(capital_omega)
-          sin_capital_omega = sin(capital_omega)
-          cos_i = cos(i)
-          sin_i = sin(i)
+          cos_capital_omega = cos(capital_omega_r)
+          sin_capital_omega = sin(capital_omega_r)
+          cos_i = cos(i_r)
+          sin_i = sin(i_r)
 
           ! Вычисление средней угловой скорости
           n = chi * a ** (-3._RP / 2._RP)
 
+          ! Вывод полученного значения
+          write(*,'(5x, a, /, 4x, '//RF//', /)') 'Значение средней угловой скорости:', n
+
           do j = 1_JP, N_JP
+
+               ! Вывод разделителя
+               write(*,'(5x, a, /)') '>>'
+
+               ! Вывод момента времени
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Момент времени:', input%dates(j)
 
                ! [ Определение орбитальных координат ]
 
                ! Вычисление средней аномалии
-               M = M_0 + n * (dates(j) - date)
+               M = M_0_r + n * (dates(j) - date)
+
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Средняя аномалия:', M
 
                ! Определение начального значения эксцентрической аномалии
                EA = M
@@ -176,36 +188,55 @@ implicit none
 
                enddo
 
-               ! Вычисление орбитальных координат
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Эксцентрическая аномалия:', M
+
+               ! Вычисление истинной аномалии и расстояния
                theta = 2._RP * atan(sqrt_v * tan(EA / 2._RP))
                r = a * (1._RP - e * e) / (1._RP + e * cos(theta))
+
+               ! Вывод полученных значений
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Истинная аномалия:', theta
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Расстояние:', r
 
                ! [ Вычисление гелиоцентрических координат ]
 
                ! Вычисление аргумента широты
-               u = theta + small_omega
+               u = theta + small_omega_r
+
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Аргумент широты:', u
 
                ! Вычисление некоторых вспомогательных
                ! переменных для вычисления координат
                r_cos_u = r * cos(u)
                r_sin_u = r * sin(u)
 
-               ! Вычисление прямоугольных координат
+               ! Вычисление координат в эклиптической системе координат
                xc = r_cos_u * cos_capital_omega - r_sin_u * sin_capital_omega * cos_i
                yc = r_cos_u * sin_capital_omega + r_sin_u * cos_capital_omega * cos_i
                zc = r_sin_u * sin_i
 
+               ! Вывод полученных значений
+               write(*,'(5x, a, /, 4x, 3('//RF//', 3x), /)') 'Координаты в эклиптической системе координат:', xc, yc, zc
+
                ! Вычисление координат в экваториальной системе координат
                yce = yc * cos_eps - zc * sin_eps
                zce = yc * sin_eps + zc * cos_eps
+
+               ! Вывод полученных значений
+               write(*,'(5x, a, /, 4x, 3('//RF//', 3x), /)') 'Координаты в экваториальной системе координат:', xc, yce, zce
 
                ! [ Вычисление геоцентрических координат ]
                xcg = xc + X(j)
                ycg = yce + Y(j)
                zcg = zce + Z(j)
 
+               ! Вывод полученных значений
+               write(*,'(5x, a, /, 4x, 3('//RF//', 3x), /)') 'Геоцентрические координаты:', xcg, ycg, zcg
+
                ! [ Вычисление прямых восхождений и склонений ]
-               
+
                ! Вычисление квадрата zcg
                zcg_sq = zcg * zcg
 
@@ -213,18 +244,24 @@ implicit none
                ro = sqrt(xcg * xcg + ycg * ycg + zcg_sq)
 
                ! Вычисление прямого восхождения
-               result%alpha(j) = asin(xcg / sqrt(ro * ro - zcg_sq))
+               result%alpha(j) = atan(xcg / ycg) + pi_2
+
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 5x, a, /)') 'Прямое восхождение:', ephemeris_conversion_DMS(result%alpha(j))
 
                ! Вычисление склонения
                result%delta(j) = asin(zcg / ro)
 
-               ! [ Сохранение дат в результате ]
-               result%dates(:) = dates(:)
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 5x, a, /)') 'Склонение:', ephemeris_conversion_DD(result%delta(j))
 
           enddo
 
+          ! [ Сохранение дат в результате ]
+          result%dates(:) = dates(:)
+
           end associate
 
-     end procedure ephemeris_do_calculate
-     
-end submodule ephemeris_do_calculate_s
+     end procedure ephemeris_do_calculate_verbose
+
+end submodule ephemeris_do_calculate_verbose_s

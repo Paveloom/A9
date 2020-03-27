@@ -1,18 +1,18 @@
 submodule ( ephemeris_input_m ) ephemeris_input_read_s
 implicit none
-     
+
      contains
-     
+
      ! Процедура для считывания входных данных
      module procedure ephemeris_input_read
-          
+
           integer(SP) :: stat ! Статусная переменная
           integer(UP) :: unit ! Номер дескриптора файла
 
           ! Открытие файла
           open( newunit = unit, file = file, action = 'read', status = 'old', iostat = stat)
           if ( stat .ne. 0_SP ) call ephemeris_input_log_error('WO', file)
-          
+
           ! Пропуск строки
           read( unit = unit, fmt = '()' )
 
@@ -192,7 +192,7 @@ implicit none
           ! Закрытие файла
           close( unit = unit, iostat = stat )
           if ( stat .ne. 0_SP ) call ephemeris_input_log_error('WC', file)
-          
+
      end procedure ephemeris_input_read
-     
+
 end submodule ephemeris_input_read_s

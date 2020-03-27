@@ -1,11 +1,11 @@
 submodule ( ephemeris_result_m ) ephemeris_result_log_error_s
 implicit none
-     
+
      contains
-     
+
      ! Процедура для вывода ошибок (результат)
      module procedure ephemeris_result_log_error
-          
+
           select case (error_code) ! Проверка кода ошибки
 
                case ('WO')
@@ -14,37 +14,37 @@ implicit none
                                                                                      & для записи.'
                     stop
 
-               case ('WD_dates') 
+               case ('WD_dates')
 
                     write(*,'(/, 5x, a, /, 5x, a, /)') 'ephemeris_result_log_error:', 'Не удалось освободить память из-под&
                                                                                      & массива дат объекта&
                                                                                      & типа result_type.'
 
-               case ('WD_alpha') 
+               case ('WD_alpha')
 
                     write(*,'(/, 5x, a, /, 5x, a, /)') 'ephemeris_result_log_error:', 'Не удалось освободить память из-под&
                                                                                      & массива значений прямых восхождений объекта&
                                                                                      & типа result_type.'
 
-               case ('WD_delta') 
+               case ('WD_delta')
 
                     write(*,'(/, 5x, a, /, 5x, a, /)') 'ephemeris_result_log_error:', 'Не удалось освободить память из-под&
                                                                                      & массива значений склонений объекта&
                                                                                      & типа result_type.'
 
-               case ('NA_dates') 
+               case ('NA_dates')
 
                     write(*,'(/, 5x, a, /, 5x, a, /)') 'ephemeris_result_log_error:', 'Массив дат не был размещен.&
                                                                                      & Запись невозможна.'
                     stop
 
-               case ('NA_alpha') 
+               case ('NA_alpha')
 
                     write(*,'(/, 5x, a, /, 5x, a, /)') 'ephemeris_result_log_error:', 'Массив значений прямых восхождений не был размещен.&
                                                                                      & Запись невозможна.'
                     stop
 
-               case ('NA_delta') 
+               case ('NA_delta')
 
                     write(*,'(/, 5x, a, /, 5x, a, /)') 'ephemeris_result_log_error:', 'Массив значений склонений не был размещен.&
                                                                                      & Запись невозможна.'
@@ -61,7 +61,7 @@ implicit none
                     write(*,'(/, 5x, a, /, 5x, a, /)') 'ephemeris_result_log_error:', 'Неизвестный код ошибки ('//error_code//').'
 
           end select
-          
+
      end procedure ephemeris_result_log_error
-     
+
 end submodule ephemeris_result_log_error_s
