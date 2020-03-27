@@ -119,8 +119,11 @@
                $(obj_path)ephemeris_do_m.o : $(obj_path)prec_m.o $(obj_path)ephemeris_input_m.o \
                                              $(obj_path)ephemeris_result_m.o
 
-                    # Вычисление эфемериды
-                    $(obj_path)ephemeris_do_calculate_s.o : $(obj_path)ephemeris_do_m.o
+                    # Вычисление эфемериды (с дополнительным выводом)
+                    $(obj_path)ephemeris_do_calculate_verbose_s.o : $(obj_path)ephemeris_do_m.o
+
+                    # Вычисление эфемериды (без дополнительного вывода)
+                    $(obj_path)ephemeris_do_calculate_non_verbose_s.o : $(obj_path)ephemeris_do_m.o
 
                     # Вывод ошибок
                     $(obj_path)ephemeris_do_log_error_s.o : $(obj_path)ephemeris_do_m.o

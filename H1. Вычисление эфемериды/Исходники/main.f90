@@ -7,7 +7,7 @@ implicit none
 
      call e%input%read('Файлы/input') ! Считывание входных данных
 
-     call e%calculate() ! Вычисление эфемериды
+     call e%calculate(verbose=.true.) ! Вычисление эфемериды
 
      call e%result%write('Файлы/result') ! Запись результата в файл
 

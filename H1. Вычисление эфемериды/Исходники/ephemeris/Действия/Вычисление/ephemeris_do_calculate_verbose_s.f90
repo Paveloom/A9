@@ -1,10 +1,10 @@
-submodule ( ephemeris_do_m ) ephemeris_do_calculate_s
+submodule ( ephemeris_do_m ) ephemeris_do_calculate_verbose_s
 implicit none
 
      contains
 
-     ! Процедура для вычисления эфемериды
-     module procedure ephemeris_do_calculate
+     ! Процедура для вычисления эфемериды (с дополнительным выводом)
+     module procedure ephemeris_do_calculate_verbose
 
           ! Постоянная из уравнения движения
           real(RP), parameter :: chi = 0.017202_RP
@@ -41,9 +41,8 @@ implicit none
           real(RP) :: EA ! Эксцентрическая аномалия
           real(RP) :: EA_prev ! Предыдущее значение эксцентрической аномалии
 
-          ! Орбитальные координаты
-          real(RP) :: theta
-          real(RP) :: r
+          real(RP) :: theta ! Истинная аномалия
+          real(RP) :: r ! Расстояние
 
           real(RP) :: u ! Аргумент широты
           real(RP) :: xc, yc, zc ! Координаты в эклиптической системе координат
@@ -66,6 +65,9 @@ implicit none
 
           integer(JP) :: j ! Счетчики
           integer(SP) :: stat ! Статусная переменная
+
+          ! Вывод информации о вызове процедуры
+          write(*,'(/, 5x, a, /)') 'Вызвана процедура вычисления эфемериды'
 
           ! Проверка, выделена ли память под массивы во входных данных
           if ( .not. allocated(input%dates) ) call ephemeris_do_log_error('NA_dates')
@@ -176,12 +178,24 @@ implicit none
           ! Вычисление средней угловой скорости
           n = chi * a ** (-3._RP / 2._RP)
 
+          ! Вывод полученного значения
+          write(*,'(5x, a, /, 4x, '//RF//', /)') 'Значение средней угловой скорости:', n
+
           do j = 1_JP, N_JP
+
+               ! Вывод разделителя
+               write(*,'(5x, a, /)') '>>'
+
+               ! Вывод момента времени
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Момент времени:', input%dates(j)
 
                ! [ Определение орбитальных координат ]
 
                ! Вычисление средней аномалии
                M = M_0_r + n * (dates(j) - date)
+
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Средняя аномалия:', M
 
                ! Определение начального значения эксцентрической аномалии
                EA = M
@@ -195,14 +209,24 @@ implicit none
 
                enddo
 
-               ! Вычисление орбитальных координат
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Эксцентрическая аномалия:', M
+
+               ! Вычисление истинной аномалии и расстояния
                theta = 2._RP * atan(sqrt_v * tan(EA / 2._RP))
                r = a * (1._RP - e * e) / (1._RP + e * cos(theta))
+
+               ! Вывод полученных значений
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Истинная аномалия:', theta
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Расстояние:', r
 
                ! [ Вычисление гелиоцентрических координат ]
 
                ! Вычисление аргумента широты
                u = theta + small_omega_r
+
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Аргумент широты:', u
 
                ! Вычисление некоторых вспомогательных
                ! переменных для вычисления координат
@@ -214,14 +238,23 @@ implicit none
                yc = r_cos_u * sin_capital_omega + r_sin_u * cos_capital_omega * cos_i
                zc = r_sin_u * sin_i
 
+               ! Вывод полученных значений
+               write(*,'(5x, a, /, 4x, 3('//RF//', 3x), /)') 'Координаты в эклиптической системе координат:', xc, yc, zc
+
                ! Вычисление координат в экваториальной системе координат
                yce = yc * cos_eps - zc * sin_eps
                zce = yc * sin_eps + zc * cos_eps
+
+               ! Вывод полученных значений
+               write(*,'(5x, a, /, 4x, 3('//RF//', 3x), /)') 'Координаты в экваториальной системе координат:', xc, yce, zce
 
                ! [ Вычисление геоцентрических координат ]
                xcg = xc + X(j)
                ycg = yce + Y(j)
                zcg = zce + Z(j)
+
+               ! Вывод полученных значений
+               write(*,'(5x, a, /, 4x, 3('//RF//', 3x), /)') 'Геоцентрические координаты:', xcg, ycg, zcg
 
                ! [ Вычисление прямых восхождений и склонений ]
 
@@ -234,8 +267,14 @@ implicit none
                ! Вычисление прямого восхождения
                result%alpha(j) = atan(xcg / ycg) + pi_2
 
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Прямое восхождение:', result%alpha(j)
+
                ! Вычисление склонения
                result%delta(j) = asin(zcg / ro)
+
+               ! Вывод полученного значения
+               write(*,'(5x, a, /, 4x, '//RF//', /)') 'Склонение:', result%delta(j)
 
           enddo
 
@@ -244,6 +283,6 @@ implicit none
 
           end associate
 
-     end procedure ephemeris_do_calculate
+     end procedure ephemeris_do_calculate_verbose
 
-end submodule ephemeris_do_calculate_s
+end submodule ephemeris_do_calculate_verbose_s

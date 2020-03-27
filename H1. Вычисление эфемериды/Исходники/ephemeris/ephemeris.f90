@@ -1,7 +1,8 @@
 module ephemeris ! Модуль, определяющий интерфейс для
                  ! вычисления эфемерид малых планет
 use ephemeris_input_m, only : input_type ! API для взаимодействия с входными данными
-use ephemeris_do_m, only : ephemeris_do_calculate ! Процедура для вычисления эфемериды
+use ephemeris_do_m, only : ephemeris_do_calculate_verbose, &  ! Процедура для вычисления эфемериды (с дополнительным выводом)
+                         & ephemeris_do_calculate_non_verbose ! Процедура для вычисления эфемериды (без дополнительного вывода)
 use ephemeris_result_m, only : result_type ! API для взаимодействия с результатом
 implicit none
 
@@ -27,10 +28,13 @@ implicit none
      interface
 
           ! Вспомогательная процедура для вычисления эфемериды
-          module subroutine ephemeris_calculate(ephemeris)
+          module subroutine ephemeris_calculate(ephemeris, verbose)
           implicit none
 
                class( ephemeris_API ) :: ephemeris ! Экземпляр API модуля
+
+               ! Тумблер вывода дополнительной информации
+               logical(kind(.true.)), optional, intent(in) :: verbose
 
           end subroutine ephemeris_calculate
 
