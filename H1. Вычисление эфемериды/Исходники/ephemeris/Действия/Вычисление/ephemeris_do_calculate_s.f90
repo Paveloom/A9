@@ -12,9 +12,15 @@ implicit none
           ! Постоянная малости для итераций уравнения Кеплера
           real(RP), parameter :: eps_K = 1e-8_RP
 
+          ! Число 2 * pi
+          real(RP), parameter :: pi_2 = 8._RP * atan(1._RP)
+
+          ! Число pi / 180
+          real(RP), parameter :: pi_180 = pi_2 / 360._RP
+
           ! Наклон экватора к эклиптике
-          real(RP), parameter :: eps = 4._RP * atan(1._RP) * &
-                                 & (23._RP + 26._RP / 60._RP + 12.27_RP / 3600._RP) / 180._RP
+          real(RP), parameter :: eps =  pi_180 * &
+                                 & (23._RP + 26._RP / 60._RP + 12.27_RP / 3600._RP)
 
           ! Вспомогательные переменные для вычисления
           ! координат в экваториальной системе координат
@@ -23,6 +29,12 @@ implicit none
 
           ! Значение числа sqrt( (1+e) / (1-e) )
           real(RP) :: sqrt_v
+
+          ! Некоторые элементы орбиты (в радианах)
+          real(RP) :: i_r ! Наклонение плоскости орбиты к плоскости эклиптики (радианы)
+          real(RP) :: small_omega_r ! Угловое расстояние перигелия от восходящего узла (радианы)
+          real(RP) :: capital_omega_r ! Гелиоцентрическая долгота восходящего узла (радианы)
+          real(RP) :: M_0_r ! Момент прохождения через перигелий (радианы)
 
           real(RP) :: n ! Средняя угловая скорость
           real(RP) :: M ! Средняя аномалия
@@ -34,7 +46,7 @@ implicit none
           real(RP) :: r
 
           real(RP) :: u ! Аргумент широты
-          real(RP) :: xc, yc, zc ! Прямоугольные координаты
+          real(RP) :: xc, yc, zc ! Координаты в эклиптической системе координат
           real(RP) :: yce, zce ! Координаты в экваториальной системе координат
 
           ! Вспомогательные переменные для вычисления координат
@@ -147,12 +159,19 @@ implicit none
           ! Вычисление числа sqrt( (1+e) / (1-e) )
           sqrt_v = sqrt( ( 1._RP + e )/( 1._RP - e ) )
 
+          ! Перевод некоторых элементов орбиты
+          ! из градусной меры в радианную
+          i_R = pi_180 * i
+          small_omega_r = pi_180 * small_omega
+          capital_omega_r = pi_180 * capital_omega
+          M_0_r = pi_180 * M_0
+
           ! Вычисление некоторых вспомогательных
           ! переменных для вычисления координат
-          cos_capital_omega = cos(capital_omega)
-          sin_capital_omega = sin(capital_omega)
-          cos_i = cos(i)
-          sin_i = sin(i)
+          cos_capital_omega = cos(capital_omega_r)
+          sin_capital_omega = sin(capital_omega_r)
+          cos_i = cos(i_r)
+          sin_i = sin(i_r)
 
           ! Вычисление средней угловой скорости
           n = chi * a ** (-3._RP / 2._RP)
@@ -162,7 +181,7 @@ implicit none
                ! [ Определение орбитальных координат ]
 
                ! Вычисление средней аномалии
-               M = M_0 + n * (dates(j) - date)
+               M = M_0_r + n * (dates(j) - date)
 
                ! Определение начального значения эксцентрической аномалии
                EA = M
@@ -183,14 +202,14 @@ implicit none
                ! [ Вычисление гелиоцентрических координат ]
 
                ! Вычисление аргумента широты
-               u = theta + small_omega
+               u = theta + small_omega_r
 
                ! Вычисление некоторых вспомогательных
                ! переменных для вычисления координат
                r_cos_u = r * cos(u)
                r_sin_u = r * sin(u)
 
-               ! Вычисление прямоугольных координат
+               ! Вычисление координат в эклиптической системе координат
                xc = r_cos_u * cos_capital_omega - r_sin_u * sin_capital_omega * cos_i
                yc = r_cos_u * sin_capital_omega + r_sin_u * cos_capital_omega * cos_i
                zc = r_sin_u * sin_i
@@ -213,15 +232,15 @@ implicit none
                ro = sqrt(xcg * xcg + ycg * ycg + zcg_sq)
 
                ! Вычисление прямого восхождения
-               result%alpha(j) = asin(xcg / sqrt(ro * ro - zcg_sq))
+               result%alpha(j) = atan(xcg / ycg) + pi_2
 
                ! Вычисление склонения
                result%delta(j) = asin(zcg / ro)
 
-               ! [ Сохранение дат в результате ]
-               result%dates(:) = dates(:)
-
           enddo
+
+          ! [ Сохранение дат в результате ]
+          result%dates(:) = dates(:)
 
           end associate
 
