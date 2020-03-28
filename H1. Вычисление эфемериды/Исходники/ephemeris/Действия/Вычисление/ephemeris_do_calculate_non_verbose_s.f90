@@ -39,10 +39,6 @@ implicit none
           real(RP) :: xcg, ycg, zcg !  Геоцентрические координаты
           real(RP) :: ro ! Радиус-вектор в геоцентрических координатах
 
-          ! Вспомогательная переменная при вычислении
-          ! прямых восхождений и склонений
-          real(RP) :: zcg_sq ! Значение zcg * zcg
-
           integer(JP) :: j ! Счетчики
           integer(SP) :: stat ! Статусная переменная
 
@@ -202,16 +198,11 @@ implicit none
                ycg = yce + Y(j)
                zcg = zce + Z(j)
 
-               ! [ Вычисление прямых восхождений и склонений ]
-
-               ! Вычисление квадрата zcg
-               zcg_sq = zcg * zcg
-
                ! Вычисление значения радиус-вектора
-               ro = sqrt(xcg * xcg + ycg * ycg + zcg_sq)
+               ro = sqrt(xcg * xcg + ycg * ycg + zcg * zcg)
 
                ! Вычисление прямого восхождения
-               result%alpha(j) = atan(xcg / ycg) + pi_2
+               result%alpha(j) = atan(ycg / xcg) + pi_2
 
                ! Вычисление склонения
                result%delta(j) = asin(zcg / ro)
