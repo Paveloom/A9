@@ -53,18 +53,14 @@
 
      ## Флаги для отладки
      opt_debug := -Og -g -Wall -Wextra -Warray-temporaries -Wcharacter-truncation -Wconversion-extra \
-                  -Wimplicit-interface -Wimplicit-procedure -Wintrinsics-std \
-                  -Wreal-q-constant -Wsurprising -Wunderflow -Walign-commons \
-                  -Wfunction-elimination -Wrealloc-lhs -Wrealloc-lhs-all \
-                  -Wstrict-overflow=5 -Wsuggest-attribute=pure -Wconversion \
-                  -Warray-bounds=2 -Wattribute-alias=2 \
-                  -Wtrampolines -Wshadow -Wunsafe-loop-optimizations \
-                  -Wcast-align=strict -Wdate-time \
-                  -Wpadded -Wvector-operation-performance \
-                  -Wdisabled-optimization -Wstack-protector \
-                  -fstack-clash-protection -fstack-protector-all \
-                  -fbacktrace -ffree-line-length-0 -fcheck=all \
-                  -ffpe-trap=invalid,zero,overflow,underflow -pedantic-errors -std=f2018
+                  -Wimplicit-interface -Wimplicit-procedure -Wintrinsics-std -Wreal-q-constant \
+                  -Wsurprising -Wunderflow -Walign-commons -Wfunction-elimination -Wrealloc-lhs \
+                  -Wrealloc-lhs-all -Wstrict-overflow=4 -Wsuggest-attribute=pure -Wconversion \
+                  -Warray-bounds=2 -Wattribute-alias=2 -Wtrampolines -Wshadow -Wunsafe-loop-optimizations \
+                  -Wcast-align=strict -Wdate-time -Wvector-operation-performance -Wdisabled-optimization \
+                  -Wstack-protector -fstack-clash-protection -fstack-protector-all \
+                  -fbacktrace -ffree-line-length-0 -fcheck=all -ffpe-trap=invalid,zero,overflow,underflow \
+                  -pedantic-errors -std=f2018
 
      ## Флаги для финальной сборки
      opt_production := -Ofast -ffree-line-length-0
@@ -85,16 +81,35 @@
      source_path := Исходники/
 
      ## Указание поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш), относящихся к модулю
-     module_subs :=
+     module_subs := Вспомогательные/Освобождение/ \
+                    Вход/ Вход/Освобождение/ Вход/Ошибки/ Вход/Считывание/
 
      ## Указание всех поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш)
-     # subs := ephemeris/ $(addprefix ephemeris/, $(module_subs))
-     subs:=
+     subs := preorb/ $(addprefix preorb/, $(module_subs))
 
      ## Директория с объектными файлами (всегда в окончании прямой слеш; точка-слеш, если хранить в текущей директории)
      obj_path := Объектники/
 
      ## Правила-зависимости (при необходимости)
+     $(obj_path)$(main_name).o : $(obj_path)preorb.o
+
+          ## API модуля
+          $(obj_path)preorb.o : $(obj_path)preorb_input_m.o
+
+          ## Вспомогательная процедура для общего освобождения памяти
+          $(obj_path)preorb_deallocate.o : $(obj_path)preorb.o
+
+               ## Входные данные
+               $(obj_path)preorb_input_m.o : $(obj_path)prec_m.o
+
+                    ## Процедура для освобождения памяти (входные данные)
+                    $(obj_path)preorb_input_log_error_s.o : $(obj_path)preorb_input_m.o
+
+                    ## Процедура для вывода ошибок (входные данные)
+                    $(obj_path)preorb_input_deallocate_s.o : $(obj_path)preorb_input_m.o
+
+                    ## Процедура для считывания входных данных
+                    $(obj_path)preorb_input_read_s.o : $(obj_path)preorb_input_m.o
 
      # Определение флагов компилятора
 
