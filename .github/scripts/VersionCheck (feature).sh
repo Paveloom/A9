@@ -35,7 +35,7 @@ if [ "H1" == "$CURRENT_PREFIX" ]; then
 
      CURRENT_TAG=H1_"$H1_CURRENT_TAG"
 
-elif [ "H1" == "$CURRENT_PREFIX" ]; then
+elif [ "H2" == "$CURRENT_PREFIX" ]; then
 
      CURRENT_TAG=H2_"$H2_CURRENT_TAG"
 
