@@ -81,8 +81,10 @@
      source_path := Исходники/
 
      ## Указание поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш), относящихся к модулю
-     module_subs := Вспомогательные/Освобождение/ \
-                    Вход/ Вход/Освобождение/ Вход/Ошибки/ Вход/Считывание/
+     module_subs := Вспомогательные/Освобождение/ Вспомогательные/Вычисление/ \
+                    Вход/ Вход/Освобождение/ Вход/Ошибки/ Вход/Считывание/ \
+                    Результат/ \
+                    Действия/ Действия/Вычисление/ Действия/Ошибки/
 
      ## Указание всех поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш)
      subs := preorb/ $(addprefix preorb/, $(module_subs))
@@ -94,7 +96,8 @@
      $(obj_path)$(main_name).o : $(obj_path)preorb.o
 
           ## API модуля
-          $(obj_path)preorb.o : $(obj_path)preorb_input_m.o
+          $(obj_path)preorb.o : $(obj_path)preorb_input_m.o $(obj_path)preorb_result_m.o \
+                                $(obj_path)preorb_do_m.o
 
           ## Вспомогательная процедура для общего освобождения памяти
           $(obj_path)preorb_deallocate.o : $(obj_path)preorb.o
@@ -110,6 +113,16 @@
 
                     ## Процедура для считывания входных данных
                     $(obj_path)preorb_input_read_s.o : $(obj_path)preorb_input_m.o
+
+               ## Результат
+               $(obj_path)preorb_result_m.o : $(obj_path)prec_m.o
+
+                    ## Процедура для вывода ошибок (результат)
+                    $(obj_path)preorb_result_deallocate_s.o : $(obj_path)preorb_result_m.o
+
+               ## Действия
+               $(obj_path)preorb_do_m.o : $(obj_path)prec_m.o $(obj_path)preorb_input_m.o \
+                                          $(obj_path)preorb_result_m.o
 
      # Определение флагов компилятора
 

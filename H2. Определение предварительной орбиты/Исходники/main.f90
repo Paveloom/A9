@@ -7,7 +7,9 @@ implicit none
 
      type( preorb_API ) :: p ! Экземпляр API модуля
 
-     call p%input%read("Файлы/input") ! Считывание входных данных
+     call p%input%read("Файлы/test") ! Считывание входных данных
+
+     call p%calc() ! Определение параметров предварительной орбиты
 
      call p%deallocate() ! Освобождение памяти
 
