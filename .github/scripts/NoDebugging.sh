@@ -26,6 +26,7 @@ function check_debugging {
 
 # Проверка make-файлов
 check_debugging "H1. Вычисление эфемериды/Makefile"
+check_debugging "H2. Определение предварительной орбиты/Makefile"
 
 # Проверка числа ошибок
 if [ "$ERROR_COUNT" -gt 0 ]; then
