@@ -18,7 +18,7 @@ function check_debugging {
 
    else
 
-      printf "Флаг отладки НЕ активирован в этом make-файле.\n"
+      printf "Флаг отладки НЕ активирован в этом make-файле.\n\n"
 
    fi
 
