@@ -197,3 +197,4 @@
      archive :
 	          find Материалы/ -path '*/.*' -prune -o -type f -print | zip Архивы/Материалы.zip -FS -q -@
 	          find H1.\ Вычисление\ эфемериды/ -path '*/*' -type f -print | zip Архивы/H1.zip -FS -q -@
+	          find H2.\ Определение\ предварительной\ орбиты -path '*/*' -type f -print | zip Архивы/H2.zip -FS -q -@

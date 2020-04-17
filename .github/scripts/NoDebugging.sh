@@ -18,7 +18,7 @@ function check_debugging {
 
    else
 
-      printf "Флаг отладки НЕ активирован в этом make-файле.\n"
+      printf "Флаг отладки НЕ активирован в этом make-файле.\n\n"
 
    fi
 
@@ -26,6 +26,7 @@ function check_debugging {
 
 # Проверка make-файлов
 check_debugging "H1. Вычисление эфемериды/Makefile"
+check_debugging "H2. Определение предварительной орбиты/Makefile"
 
 # Проверка числа ошибок
 if [ "$ERROR_COUNT" -gt 0 ]; then
