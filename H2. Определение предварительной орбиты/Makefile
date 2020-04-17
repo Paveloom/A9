@@ -83,7 +83,7 @@
      ## Указание поддиректорий в директории с исходными файлами (всегда в окончании прямой слеш), относящихся к модулю
      module_subs := Вспомогательные/Освобождение/ Вспомогательные/Вычисление/ \
                     Вход/ Вход/Освобождение/ Вход/Ошибки/ Вход/Считывание/ \
-                    Результат/ \
+                    Результат/ Результат/Запись/ Результат/Ошибки/ \
                     Действия/ Действия/Вычисление/ Действия/Ошибки/ \
                     Конвертация/ Конвертация/Процедуры/
 
@@ -116,10 +116,13 @@
                     $(obj_path)preorb_input_read_s.o : $(obj_path)preorb_input_m.o
 
                ## Результат
-               $(obj_path)preorb_result_m.o : $(obj_path)prec_m.o
+               $(obj_path)preorb_result_m.o : $(obj_path)prec_m.o $(obj_path)preorb_conversion_m.o
 
                     ## Процедура для вывода ошибок (результат)
-                    $(obj_path)preorb_result_deallocate_s.o : $(obj_path)preorb_result_m.o
+                    $(obj_path)preorb_result_log_error_s.o : $(obj_path)preorb_result_m.o
+
+                    ## Процедура для записи результата в файл
+                    $(obj_path)preorb_result_write_s.o : $(obj_path)preorb_result_m.o
 
                ## Действия
                $(obj_path)preorb_do_m.o : $(obj_path)prec_m.o $(obj_path)preorb_input_m.o \

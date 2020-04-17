@@ -3,8 +3,9 @@ module preorb_result_m ! Модуль, описывающий результат
 use prec_m, only : RP, & ! Точность вещественных чисел, используемых в программе
                  & RF, & ! Формат вывода вещественных чисел
                  & SP, & ! Точность целого числа статусной переменной
-                 & JP, & ! Точность целого числа счетчика и индекса
                  & UP    ! Точность целого числа номера дескриптора файла
+use preorb_conversion_m, only : preorb_conversion_DD ! Функция для конвертации из радианной
+                                                     ! меры в градусную (с форматированием)
 implicit none
 
      private
@@ -15,33 +16,45 @@ implicit none
 
           real(RP) :: a ! Большая полуось
           real(RP) :: e ! Эксцентриситет орбиты
-          real(RP) :: i ! Наклонение плоскости орбиты к плоскости эклиптики (градусная мера)
+          real(RP) :: i ! Угол наклона плоскости орбиты к плоскости эклиптики (градусная мера)
           real(RP) :: small_omega ! Аргумент перицентра (градусная мера)
           real(RP) :: capital_omega ! Долгота восходящего узла (градусная мера)
-          real(RP) :: M_0 ! Средняя аномалия в момент первого наблюдения (градусная мера)
+          real(RP) :: M_0 ! Средняя аномалия на момент первого наблюдения (градусная мера)
 
           contains
 
-          ! ! Процедура для записи результата в файл
-          ! procedure :: write => preorb_result_write
+          ! Процедура для записи результата в файл
+          procedure :: write => preorb_result_write
 
-          ! ! Процедуры для вывода ошибок (результат)
-          ! procedure, private :: log => preorb_result_log_error
+          ! Процедуры для вывода ошибок (результат)
+          procedure, private :: log => preorb_result_log_error
 
      end type result_type
 
      interface
 
-          ! ! Процедура для вывода ошибок (результат)
-          ! module impure subroutine preorb_result_log_error(result, error_code, file)
-          ! implicit none
+          ! Процедура для вывода ошибок (результат)
+          module impure subroutine preorb_result_log_error(result, error_code, file)
+          implicit none
 
-          !      class( result_type ), intent(inout) :: result ! Результат
+               class( result_type ), intent(inout) :: result ! Результат
 
-          !      character(*), intent(in) :: error_code ! Код ошибки
-          !      character(*), intent(in), optional :: file ! Имя файла
+               character(*), intent(in) :: error_code ! Код ошибки
+               character(*), intent(in), optional :: file ! Имя файла
 
-          ! end subroutine preorb_result_log_error
+          end subroutine preorb_result_log_error
+
+          ! Процедура для записи результата в файл
+          module impure subroutine preorb_result_write(result, file, conversion)
+          implicit none
+
+               class( result_type ), intent(inout) :: result ! Результат
+               character(*), intent(in), optional :: file ! Имя файла для записи
+
+               ! Тумблер конвертации
+               logical(kind(.true.)), optional, intent(in) :: conversion
+
+          end subroutine preorb_result_write
 
      end interface
 
