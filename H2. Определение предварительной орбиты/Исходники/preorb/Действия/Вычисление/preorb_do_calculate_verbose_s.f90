@@ -126,8 +126,8 @@ implicit none
           write(*,'(4x, '//RF//')') tau
 
           ! Вычисление n_1_0 и n_2_0
-          n_1_0 = tau_2 / tau
-          n_2_0 = tau_1 / tau
+          n_1_0 = tau_1 / tau
+          n_2_0 = tau_2 / tau
 
           write(*,'(/, 5x, a)') "Значения n_1_0 и n_2_0:"
           write(*,'(4x, 2('//RF//', 4x))') n_1_0, n_2_0
