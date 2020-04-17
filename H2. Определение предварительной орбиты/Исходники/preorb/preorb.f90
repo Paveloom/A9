@@ -1,10 +1,12 @@
 module preorb ! Модуль, описывающий интерфейс для
               ! определения параметров предварительной
               ! орбиты по трем наблюдениям
-use preorb_input_m, only : input_type   ! Тип, определяющий входные данные
-use preorb_result_m, only : result_type ! Тип, определяющий результат
-use preorb_do_m, only : preorb_do_calculate_verbose ! Процедура для определения параметров предварительной
-                                                    ! орбиты по трем наблюдениям (с дополнительным выводом)
+use preorb_input_m, only : input_type   ! API для взаимодействия с входными данными
+use preorb_result_m, only : result_type ! API для взаимодействия с результатом
+use preorb_do_m, only : preorb_do_calculate_verbose, &  ! Процедура для определения параметров предварительной
+                                                        ! орбиты по трем наблюдениям (с дополнительным выводом)
+                      & preorb_do_calculate_non_verbose ! Процедура для определения параметров предварительной
+                                                        ! орбиты по трем наблюдениям (без дополнительного вывода)
 implicit none
 
      private
@@ -38,10 +40,11 @@ implicit none
 
           ! Вспомогательная процедура для определения параметров
           ! предварительной орбиты по трем наблюдениям
-          module subroutine preorb_calculate(preorb)
+          module subroutine preorb_calculate(preorb, verbose)
           implicit none
 
                class( preorb_API ), intent(inout) :: preorb ! Экземпляр API модуля
+               logical(kind(.true.)), intent(in), optional :: verbose ! Показывать дополнительный вывод?
 
           end subroutine preorb_calculate
 

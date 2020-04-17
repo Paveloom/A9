@@ -124,6 +124,23 @@
                $(obj_path)preorb_do_m.o : $(obj_path)prec_m.o $(obj_path)preorb_input_m.o \
                                           $(obj_path)preorb_result_m.o
 
+                    ## Процедура для определения параметров предварительной
+                    ## орбиты по трем наблюдениям (с дополнительным выводом)
+                    $(obj_path)preorb_do_calculate_verbose_s.o : $(obj_path)preorb_do_m.o
+
+                    ## Процедура для определения параметров предварительной
+                    ## орбиты по трем наблюдениям (без дополнительного вывода)
+                    $(obj_path)preorb_do_calculate_non_verbose_s.o : $(obj_path)preorb_do_m.o
+
+                    ## Процедура для вывода ошибок (действия)
+                    $(obj_path)preorb_do_log_error_s.o : $(obj_path)preorb_do_m.o
+
+                    ## Функция для вычисления нормы векторного произведения двух векторов
+                    $(obj_path)preorb_calc_norm_cross_s.o : $(obj_path)preorb_do_m.o
+
+                    ## Функция для вычисления векторного произведения двух векторов
+                    $(obj_path)preorb_calc_cross_s.o : $(obj_path)preorb_do_m.o
+
      # Определение флагов компилятора
 
      ifeq (true, $(debugging))

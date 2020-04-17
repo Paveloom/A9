@@ -9,7 +9,7 @@ implicit none
 
      call p%input%read("Файлы/test") ! Считывание входных данных
 
-     call p%calc() ! Определение параметров предварительной орбиты
+     call p%calc(verbose = .true.) ! Определение параметров предварительной орбиты
 
      call p%deallocate() ! Освобождение памяти
 

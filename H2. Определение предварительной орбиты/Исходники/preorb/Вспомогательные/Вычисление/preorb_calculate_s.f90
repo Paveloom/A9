@@ -7,7 +7,23 @@ implicit none
      ! предварительной орбиты по трем наблюдениям
      module procedure preorb_calculate
 
-          call preorb_do_calculate_verbose(preorb%input, preorb%result)
+          if ( present(verbose) ) then
+
+               if ( verbose ) then
+
+                    call preorb_do_calculate_verbose(preorb%input, preorb%result)
+
+               else
+
+                    call preorb_do_calculate_non_verbose(preorb%input, preorb%result)
+
+               endif
+
+          else
+
+               call preorb_do_calculate_non_verbose(preorb%input, preorb%result)
+
+          endif
 
      end procedure preorb_calculate
 

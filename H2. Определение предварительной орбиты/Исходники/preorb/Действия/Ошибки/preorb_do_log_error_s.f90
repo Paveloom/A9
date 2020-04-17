@@ -3,7 +3,7 @@ implicit none
 
      contains
 
-     ! Процедура для вывода ошибок (входные данные)
+     ! Процедура для вывода ошибок (действия)
      module procedure preorb_do_log_error
 
           select case (error_code) ! Проверка кода ошибки

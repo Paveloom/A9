@@ -1,11 +1,11 @@
-submodule ( preorb_do_m ) preorb_do_calculate_verbose_s
+submodule ( preorb_do_m ) preorb_do_calculate_non_verbose_s
 implicit none
 
      contains
 
      ! Процедура для определения параметров предварительной
-     ! орбиты по трем наблюдениям (с дополнительным выводом)
-     module procedure preorb_do_calculate_verbose
+     ! орбиты по трем наблюдениям (без дополнительного вывода)
+     module procedure preorb_do_calculate_non_verbose
 
           real(RP) :: tau_1, tau_2 ! Разницы между средним моментом и другими моментами
           real(RP) :: tau ! Сумма значений tau_1 и tau_2
@@ -305,6 +305,6 @@ implicit none
 
           end associate
 
-     end procedure preorb_do_calculate_verbose
+     end procedure preorb_do_calculate_non_verbose
 
-end submodule preorb_do_calculate_verbose_s
+end submodule preorb_do_calculate_non_verbose_s

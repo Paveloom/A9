@@ -12,9 +12,9 @@ use preorb_result_m, only : result_type ! API для взаимодействи�
 implicit none
 
      private
-     public :: preorb_do_calculate_verbose!, &  ! Процедура для определения параметров предварительной
+     public :: preorb_do_calculate_verbose, &  ! Процедура для определения параметров предварительной
                                                ! орбиты по трем наблюдениям (с дополнительным выводом)
-          !    & preorb_do_calculate_non_verbose ! Процедура для определения параметров предварительной
+             & preorb_do_calculate_non_verbose ! Процедура для определения параметров предварительной
                                                ! орбиты по трем наблюдениям (без дополнительного вывода)
 
      ! Постоянная из уравнения движения
@@ -50,13 +50,13 @@ implicit none
 
           ! Процедура для определения параметров предварительной
           ! орбиты по трем наблюдениям (без дополнительного вывода)
-          ! module impure subroutine preorb_do_calculate_non_verbose(input, result)
-          ! implicit none
+          module impure subroutine preorb_do_calculate_non_verbose(input, result)
+          implicit none
 
-          !      type( input_type ), intent(in) :: input ! Входные данные
-          !      type( result_type ), intent(inout) :: result ! Результат
+               type( input_type ), intent(inout) :: input ! Входные данные
+               type( result_type ), intent(inout) :: result ! Результат
 
-          ! end subroutine preorb_do_calculate_non_verbose
+          end subroutine preorb_do_calculate_non_verbose
 
           ! Процедура для вывода ошибок (действия)
           module impure subroutine preorb_do_log_error(input, error_code)
@@ -67,6 +67,23 @@ implicit none
                character(*), intent(in) :: error_code ! Код ошибки
 
           end subroutine preorb_do_log_error
+
+          ! Функция для вычисления нормы векторного произведения двух векторов
+          module pure real(RP) function preorb_calc_norm_cross(a, b)
+          implicit none
+
+               real(RP), dimension(3), intent(in) :: a, b ! Вектора
+
+          end function preorb_calc_norm_cross
+
+          ! Функция для вычисления векторного произведения двух векторов
+          module pure subroutine preorb_calc_cross(a, b, c)
+          implicit none
+
+               real(RP), dimension(3), intent(in) :: a, b ! Вектора
+               real(RP), dimension(3), intent(inout) :: c ! Результат произведения
+
+          end subroutine preorb_calc_cross
 
      end interface
 
