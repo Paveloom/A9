@@ -7,8 +7,11 @@ use prec_m, only : RP, & ! Точность вещественных чисел,
                  & RF    ! Формат вывода вещественных чисел
 use preorb_input_m, only : input_type ! API для взаимодействия с входными данными
 use preorb_result_m, only : result_type ! API для взаимодействия с результатом
-! use preorb_conversion_m, only : preorb_conversion_DD, & ! Функция для конвертации из радианной меры в градусную
-                              ! & preorb_conversion_DMS   ! Функция для конвертации из радианной меры в часовую
+use preorb_conversion_m, only : preorb_conversion_DD, &  ! Функция для конвертации из радианной
+                                                         ! меры в градусную (с форматированием)
+                              & preorb_conversion_DMS, & ! Функция для конвертации из радианной
+                                                         ! меры в часовую (с форматированием)
+                              & chars ! Размер вспомогательных строк
 implicit none
 
      private
