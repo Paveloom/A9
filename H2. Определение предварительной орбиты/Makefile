@@ -49,7 +49,7 @@
      pattern := f90
 
      ## Режим отладки (при значении true использует флаги opt_debug, при другом значении — opt_production)
-     debugging := false
+     debugging := true
 
      ## Флаги для отладки
      opt_debug := -Og -g -Wall -Wextra -Warray-temporaries -Wcharacter-truncation -Wconversion-extra \
@@ -142,8 +142,14 @@
                     ## Функция для вычисления нормы векторного произведения двух векторов
                     $(obj_path)preorb_calc_norm_cross_s.o : $(obj_path)preorb_do_m.o
 
-                    ## Функция для вычисления векторного произведения двух векторов
+                    ## Процедура для вычисления векторного произведения двух векторов
                     $(obj_path)preorb_calc_cross_s.o : $(obj_path)preorb_do_m.o
+
+                    ## Функция для вычисления факториала четных чисел
+                    $(obj_path)preorb_calc_factor_even_s.o : $(obj_path)preorb_do_m.o
+
+                    ## Функция для вычисления факториала нечетных чисел
+                    $(obj_path)preorb_calc_factor_odd_s.o : $(obj_path)preorb_do_m.o
 
                ## Конвертация
                $(obj_path)preorb_conversion_m.o : $(obj_path)prec_m.o
