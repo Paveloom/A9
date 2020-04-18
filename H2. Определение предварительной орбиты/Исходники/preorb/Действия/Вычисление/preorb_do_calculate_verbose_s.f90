@@ -90,6 +90,10 @@ implicit none
           ! Истинные аномалии на первый и третий моменты времени
           real(RP) :: theta_1
 
+          ! Значения cos(theta_1) и sin(theta_1)
+          real(RP) :: cos_theta_1
+          real(RP) :: sin_theta_1
+
           ! Вспомогательная переменная
           real(RP) :: beta
 
@@ -99,15 +103,15 @@ implicit none
           ! Значения sin(eps) и cos(eps)
           real(RP) sin_eps, cos_eps
 
-          ! Вспомогательные вектора
-          real(RP), dimension(3) :: nr_1, nr_3
-          real(RP), dimension(3) :: l_vec
-
           ! Вспомогательная переменная
-          real(RP) :: sin_capital_omega
+          real(RP) :: sigma
 
-          ! Аргумент широты
-          real(RP) :: u_arg
+          ! Вспомогательный вектор r_0 и его норма
+          real(RP), dimension(3) :: r_0
+          real(RP) :: r_0_norm
+
+          ! Векторные элементы
+          real(RP), dimension(3) :: P_vec, Q_vec
 
           ! Проверка, была ли выделена память под входные данные
           if ( .not. allocated( input%dates ) ) call preorb_do_log_error(input, 'NA_dates')
@@ -430,6 +434,13 @@ implicit none
           write(*,'(/, 5x, a)') "Значение истинной аномалии на момент первого наблюдения (градусная мера):"
           write(*,'('//f//', a)') trim(f1)
 
+          ! Вычисление косинуса и синуса от theta_1
+          cos_theta_1 = cos(theta_1)
+          sin_theta_1 = sin(theta_1)
+
+          write(*,'(/, 5x, a)') "Значения sin(theta_1) и cos(theta_1):"
+          write(*,'(4x, *('//RF//', 4x))') sin_theta_1, cos_theta_1
+
           ! Вычисление beta
           beta = ( 1._RP - sqrt( 1._RP - ee ) ) / e
 
@@ -438,7 +449,7 @@ implicit none
 
           ! Вычисление эксцентрической аномалии
           ! на момент первого наблюдения
-          E_1 = theta_1 - 2._RP * atan2( beta * sin(theta_1), 1._RP + beta * cos(theta_1) )
+          E_1 = theta_1 - 2._RP * atan2( beta * sin_theta_1, 1._RP + beta * cos_theta_1 )
 
           write(*,'(/, 5x, a)') "Значение эксцентрической аномалии на момент первого наблюдения (радианы):"
           write(*,'(4x, *('//RF//', 4x))') E_1
@@ -469,80 +480,69 @@ implicit none
           write(*,'(/, 5x, a)') "Значения sin(eps) и cos(eps):"
           write(*,'(4x, *('//RF//', 4x))') sin_eps, cos_eps
 
-          ! ! Вычисление элементов векторов nr_1 и nr_3
+          ! Вычисление вспомогательной переменной
+          sigma = ( r_1(1) * r_3(1) + r_1(2) * r_3(2) + r_1(3) * r_3(3) ) / r_1_norm / r_1_norm
 
-          ! nr_1(1) = r_1(1)
-          ! nr_1(2) = r_1(3) * sin_eps + r_1(2) * cos_eps
-          ! nr_1(3) = r_1(3) * cos_eps - r_1(2) * sin_eps
+          write(*,'(/, 5x, a)') "Значение sigma:"
+          write(*,'(4x, *('//RF//', 4x))') sigma
 
-          ! nr_3(1) = r_3(1)
-          ! nr_3(2) = r_3(3) * sin_eps + r_3(2) * cos_eps
-          ! nr_3(3) = r_3(3) * cos_eps - r_3(2) * sin_eps
+          ! Вычисление вспомогательного вектора
+          r_0(1) = r_3(1) - sigma * r_1(1)
+          r_0(2) = r_3(2) - sigma * r_1(2)
+          r_0(3) = r_3(3) - sigma * r_1(3)
 
-          ! write(*,'(/, 5x, a)') "Значения векторов nr_1 и nr_3:"
-          ! write(*,'(5x, "nr_1: ", *('//RF//', 4x))') nr_1
-          ! write(*,'(5x, "nr_3: ", *('//RF//', 4x))') nr_3
+          write(*,'(/, 5x, a)') "Значения вспомогательного вектора r_0:"
+          write(*,'(4x, *('//RF//', 4x))') r_0
 
-          ! ! Вычисление вектора l
-          ! call preorb_calc_cross(nr_1, nr_3, l_vec)
+          ! Вычисление нормы r_0
+          r_0_norm = norm2(r_0)
 
-          ! write(*,'(/, 5x, a)') "Значения вектора l:"
-          ! write(*,'(4x, *('//RF//', 4x))') l_vec
+          write(*,'(/, 5x, a)') "Значение нормы вспомогательного вектора r_0:"
+          write(*,'(4x, *('//RF//', 4x))') r_0_norm
 
-          ! ! Вычисление долготы восходящего узла
-          ! capital_omega = atan2( -l_vec(2), l_vec(1) )
+          ! Вычисление P, Q
+          P_vec = r_1 / r_1_norm * cos_theta_1 - r_0 / r_0_norm * sin_theta_1
+          Q_vec = r_1 / r_1_norm * sin_theta_1 + r_0 / r_0_norm * cos_theta_1
 
-          ! write(*,'(/, 5x, a)') "Значение долготы восходящего узла (радианы):"
-          ! write(*,'(4x, *('//RF//', 4x))') capital_omega
+          write(*,'(/, 5x, a)') "Значения векторов P и Q:"
+          write(*,'(5x, "P: ", *('//RF//', 4x))') P_vec
+          write(*,'(5x, "Q: ", *('//RF//', 4x))') Q_vec
 
-          ! f1(:) = preorb_conversion_DD(capital_omega)
-          ! if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
+          ! Вычисление аргумента перицентра
+          small_omega = atan2(P_vec(3) * cos_eps - P_vec(2) * sin_eps, Q_vec(3) * cos_eps - Q_vec(2) * sin_eps)
 
-          ! write(*,'(/, 5x, a)') "Значение долготы восходящего узла (градусная мера):"
-          ! write(*,'('//f//', a)') trim(f1)
+          write(*,'(/, 5x, a)') "Значение аргумента перицентра (радианы):"
+          write(*,'(4x, *('//RF//', 4x))') small_omega
 
-          ! ! Вычисление sin(capital_omega)
-          ! sin_capital_omega = sin(capital_omega)
+          f1(:) = preorb_conversion_DD(small_omega)
+          if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
 
-          ! write(*,'(/, 5x, a)') "Значение синуса долготы восходящего узла:"
-          ! write(*,'(4x, *('//RF//', 4x))') sin_capital_omega
+          write(*,'(/, 5x, a)') "Значение аргумента перицентра (градусная мера):"
+          write(*,'('//f//', a)') trim(f1)
 
-          ! ! Вычисление угла наклонена плоскости орбиты к плоскости эклиптики
-          ! i = atan2( l_vec(1) / sin_capital_omega, l_vec(3) )
+          ! Вычисление угла наклона
+          i = asin( ( P_vec(3) * cos_eps - P_vec(2) * sin_eps ) / sin(small_omega) )
 
-          ! write(*,'(/, 5x, a)') "Значение угла наклонена плоскости орбиты к плоскости эклиптики (радианы):"
-          ! write(*,'(4x, *('//RF//', 4x))') i
+          write(*,'(/, 5x, a)') "Значение угла наклона плоскости орбиты к плоскости эклиптики (радианы):"
+          write(*,'(4x, *('//RF//', 4x))') i
 
-          ! f1(:) = preorb_conversion_DD(i)
-          ! if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
+          f1(:) = preorb_conversion_DD(i)
+          if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
 
-          ! write(*,'(/, 5x, a)') "Значение угла наклонена плоскости орбиты к плоскости эклиптики (градусная мера):"
-          ! write(*,'('//f//', a)') trim(f1)
+          write(*,'(/, 5x, a)') "Значение угла наклона плоскости орбиты к плоскости эклиптики (градусная мера):"
+          write(*,'('//f//', a)') trim(f1)
 
-          ! ! Вычисление аргумента широты
-          ! u_arg = atan2( ( r_2(3) * cos(e) - r_2(2) * sin(e) ) / sin(i), &
-          !                & r_1(1) * cos(capital_omega) + ( r_1(3) * sin(e) + r_1(2) * cos(e) ) * sin_capital_omega )
+          ! Вычисление долготы восходящего узла
+          capital_omega = asin( ( P_vec(2) * cos(small_omega) - Q_vec(2) * sin(small_omega) ) / cos_eps )
 
-          ! write(*,'(/, 5x, a)') "Значение аргумента широты (радианы):"
-          ! write(*,'(4x, *('//RF//', 4x))') u_arg
+          write(*,'(/, 5x, a)') "Значение долготы восходящего узла (радианы):"
+          write(*,'(4x, *('//RF//', 4x))') capital_omega
 
-          ! f1(:) = preorb_conversion_DD(u_arg)
-          ! if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
+          f1(:) = preorb_conversion_DD(capital_omega)
+          if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
 
-          ! write(*,'(/, 5x, a)') "Значение аргумента широты (градусная мера):"
-          ! write(*,'('//f//', a)') trim(f1)
-
-          ! ! Вычисление аргумента перицентра
-          ! small_omega = u_arg - theta_1
-
-          ! write(*,'(/, 5x, a)') "Значение аргумента перицентра (радианы):"
-          ! write(*,'(4x, *('//RF//', 4x))') small_omega
-
-          ! f1(:) = preorb_conversion_DD(small_omega)
-          ! if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
-
-          ! write(*,'(/, 5x, a)') "Значение аргумента перицентра (градусная мера):"
-          ! write(*,'('//f//', a, /)') trim(f1)
+          write(*,'(/, 5x, a)') "Значение долготы восходящего узла (градусная мера):"
+          write(*,'('//f//', a, /)') trim(f1)
 
           end associate
 
