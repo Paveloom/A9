@@ -21,10 +21,17 @@ implicit none
                                                ! орбиты по трем наблюдениям (без дополнительного вывода)
 
      ! Постоянная из уравнения движения
-     real(RP), parameter :: chi_sq = 0.017202_RP ** 2._RP
+     real(RP), parameter :: chi = 0.017202_RP
+
+     ! Квадрат постоянной из уравнения движения
+     real(RP), parameter :: chi_sq = chi * chi
 
      ! Постоянная малости для итераций
      real(RP), parameter :: eps_e = 1e-8_RP
+
+     ! Число итерации при вычислении значения функции X
+     ! (влияет на числа при двойных факториалах)
+     integer(JP), parameter :: X_iters = 4_JP
 
      ! Число pi
      real(RP), parameter :: pi = 4._RP * atan(1._RP)
@@ -79,7 +86,7 @@ implicit none
 
           end function preorb_calc_norm_cross
 
-          ! Функция для вычисления векторного произведения двух векторов
+          ! Процедура для вычисления векторного произведения двух векторов
           module pure subroutine preorb_calc_cross(a, b, c)
           implicit none
 
@@ -87,6 +94,22 @@ implicit none
                real(RP), dimension(3), intent(inout) :: c ! Результат произведения
 
           end subroutine preorb_calc_cross
+
+          ! Функция для вычисления факториала четных чисел
+          module pure real(RP) function preorb_calc_factor_even(n)
+          implicit none
+
+               integer(JP), intent(in) :: n ! Число при факториале
+
+          end function preorb_calc_factor_even
+
+          ! Функция для вычисления факториала нечетных чисел
+          module pure real(RP) function preorb_calc_factor_odd(n)
+          implicit none
+
+               integer(JP), intent(in) :: n ! Число при факториале
+
+          end function preorb_calc_factor_odd
 
      end interface
 

@@ -142,8 +142,14 @@
                     ## Функция для вычисления нормы векторного произведения двух векторов
                     $(obj_path)preorb_calc_norm_cross_s.o : $(obj_path)preorb_do_m.o
 
-                    ## Функция для вычисления векторного произведения двух векторов
+                    ## Процедура для вычисления векторного произведения двух векторов
                     $(obj_path)preorb_calc_cross_s.o : $(obj_path)preorb_do_m.o
+
+                    ## Функция для вычисления факториала четных чисел
+                    $(obj_path)preorb_calc_factor_even_s.o : $(obj_path)preorb_do_m.o
+
+                    ## Функция для вычисления факториала нечетных чисел
+                    $(obj_path)preorb_calc_factor_odd_s.o : $(obj_path)preorb_do_m.o
 
                ## Конвертация
                $(obj_path)preorb_conversion_m.o : $(obj_path)prec_m.o
