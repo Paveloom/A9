@@ -49,7 +49,7 @@
      pattern := f90
 
      ## Режим отладки (при значении true использует флаги opt_debug, при другом значении — opt_production)
-     debugging := true
+     debugging := false
 
      ## Флаги для отладки
      opt_debug := -Og -g -Wall -Wextra -Warray-temporaries -Wcharacter-truncation -Wconversion-extra \
