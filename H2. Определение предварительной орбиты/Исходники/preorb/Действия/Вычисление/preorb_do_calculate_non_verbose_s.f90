@@ -110,11 +110,11 @@ implicit none
           tau_2 = dates(3) - dates(2)
 
           ! Вычисление tau
-          tau = dates(3) - dates(1)
+          tau = tau_1 + tau_2
 
           ! Вычисление n_1_0 и n_2_0
-          n_1_0 = tau_2 / tau
-          n_2_0 = tau_1 / tau
+          n_1_0 = tau_1 / tau
+          n_2_0 = tau_2 / tau
 
           ! Вычисление c_1 и c_2
           c_0 = 1._RP / 6._RP * chi_sq * tau_1 * tau_2

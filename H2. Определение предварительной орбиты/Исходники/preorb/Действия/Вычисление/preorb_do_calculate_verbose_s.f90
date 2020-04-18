@@ -120,7 +120,7 @@ implicit none
           write(*,'(4x, 2('//RF//', 4x))') tau_1, tau_2
 
           ! Вычисление tau
-          tau = dates(3) - dates(1)
+          tau = tau_1 + tau_2
 
           write(*,'(/, 5x, a)') "Значение tau:"
           write(*,'(4x, '//RF//')') tau

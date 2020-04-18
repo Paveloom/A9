@@ -21,7 +21,10 @@ implicit none
                                                ! орбиты по трем наблюдениям (без дополнительного вывода)
 
      ! Постоянная из уравнения движения
-     real(RP), parameter :: chi_sq = 0.017202_RP ** 2._RP
+     real(RP), parameter :: chi = 0.017202_RP
+
+     ! Квадрат постоянной из уравнения движения
+     real(RP), parameter :: chi_sq = chi * chi
 
      ! Постоянная малости для итераций
      real(RP), parameter :: eps_e = 1e-8_RP
