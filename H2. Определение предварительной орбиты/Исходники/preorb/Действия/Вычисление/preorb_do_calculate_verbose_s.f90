@@ -84,7 +84,6 @@ implicit none
           ! Вспомогательные переменные
           real(RP) :: sin_2f, cos_2f
           real(RP) :: pr_1, pr_3
-          real(RP) :: e_sin_theta
           real(RP) :: ee
 
           ! Истинные аномалии на первый и третий моменты времени
@@ -398,14 +397,20 @@ implicit none
           write(*,'(/, 5x, a)') "Значения p / r_1 - 1._RP и 1 - p / r_3:"
           write(*,'(4x, *('//RF//', 4x))') pr_1, pr_3
 
-          ! Вычисление e_sin_theta
-          e_sin_theta = ( pr_1 * cos_2f + pr_3 ) / sin_2f
+          ! Вычисление истинной аномалии на момент первого наблюдения
+          theta_1 = atan2( pr_1 * cos_2f + pr_3, pr_1 * sin_2f )
 
-          write(*,'(/, 5x, a)') "Значение e * sin(theta_1):"
-          write(*,'(4x, *('//RF//', 4x))') e_sin_theta
+          write(*,'(/, 5x, a)') "Значение истинной аномалии на момент первого наблюдения (радианы):"
+          write(*,'(4x, *('//RF//', 4x))') theta_1
+
+          f1(:) = preorb_conversion_DD(theta_1)
+          if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
+
+          write(*,'(/, 5x, a)') "Значение истинной аномалии на момент первого наблюдения (градусная мера):"
+          write(*,'('//f//', a)') trim(f1)
 
           ! Вычисление эксцентриситета
-          e = sqrt(e_sin_theta * e_sin_theta + pr_1 * pr_1)
+          e = pr_1 / cos(theta_1)
 
           write(*,'(/, 5x, a)') "Значение эксцентриситета:"
           write(*,'(4x, *('//RF//', 4x))') e
@@ -421,18 +426,6 @@ implicit none
 
           write(*,'(/, 5x, a)') "Значение большой полуоси:"
           write(*,'(4x, *('//RF//', 4x))') a
-
-          ! Вычисление истинной аномалии на первый момент времени
-          theta_1 = atan2(e_sin_theta, pr_1)
-
-          write(*,'(/, 5x, a)') "Значение истинной аномалии на момент первого наблюдения (радианы):"
-          write(*,'(4x, *('//RF//', 4x))') theta_1
-
-          f1(:) = preorb_conversion_DD(theta_1)
-          if ( f1(1:1) .eq. "-" ) then; f = "4x"; else; f = "5x"; endif
-
-          write(*,'(/, 5x, a)') "Значение истинной аномалии на момент первого наблюдения (градусная мера):"
-          write(*,'('//f//', a)') trim(f1)
 
           ! Вычисление косинуса и синуса от theta_1
           cos_theta_1 = cos(theta_1)
