@@ -80,7 +80,6 @@ implicit none
           ! Вспомогательные переменные
           real(RP) :: sin_2f, cos_2f
           real(RP) :: pr_1, pr_3
-          real(RP) :: e_sin_theta
           real(RP) :: ee
 
           ! Истинные аномалии на первый и третий моменты времени
@@ -295,20 +294,17 @@ implicit none
           pr_1 = p / r_1_norm - 1._RP
           pr_3 = 1._RP - p / r_3_norm
 
-          ! Вычисление e_sin_theta
-          e_sin_theta = ( pr_1 * cos_2f + pr_3 ) / sin_2f
+          ! Вычисление истинной аномалии на момент первого наблюдения
+          theta_1 = atan2( pr_1 * cos_2f + pr_3, pr_1 * sin_2f )
 
           ! Вычисление эксцентриситета
-          e = sqrt(e_sin_theta * e_sin_theta + pr_1 * pr_1)
+          e = pr_1 / cos(theta_1)
 
           ! Вычисление квадрата эксцентриситета
           ee = e * e
 
           ! Вычисление большой полуоси
           a = p / ( 1._RP - ee )
-
-          ! Вычисление истинной аномалии на первый момент времени
-          theta_1 = atan2(e_sin_theta, pr_1)
 
           ! Вычисление косинуса и синуса от theta_1
           cos_theta_1 = cos(theta_1)
